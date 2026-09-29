@@ -1,0 +1,6 @@
+# Copy this file to android/key.properties and replace every value.
+# Keep android/key.properties private; it is ignored by Git.
+storePassword=REPLACE_WITH_KEYSTORE_PASSWORD
+keyPassword=REPLACE_WITH_KEY_PASSWORD
+keyAlias=REPLACE_WITH_KEY_ALIAS
+storeFile=C:/absolute/path/to/your-upload-key.jks
