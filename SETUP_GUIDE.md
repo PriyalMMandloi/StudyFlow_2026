@@ -55,9 +55,9 @@ flutter run --dart-define=REVENUECAT_IOS_API_KEY=<public-ios-sdk-key>
 
 ## RevenueCat
 
-Supply only the public platform SDK key with `--dart-define`; no key is hard-coded. In RevenueCat, configure Android/iOS store products, attach them to the `default` offering, and grant that offering the `studyflow_pro` entitlement. The app synchronizes the Supabase Auth user UUID as RevenueCat's App User ID.
+Supply only the public platform SDK key with `--dart-define`; no key is hard-coded. In RevenueCat, create a non-consumable lifetime product for each supported store, attach it to the `lifetime` package in the `default` offering, and grant it the `studyflow_pro` entitlement. Do not attach subscription packages: the app intentionally displays and purchases only `PackageType.lifetime`. The app synchronizes the Supabase Auth user UUID as RevenueCat's App User ID.
 
-In the app, open **Profile > StudyFlow Pro** to view the current offering's localized product prices and start a store purchase. A successful purchase unlocks Analytics only when RevenueCat reports the active `studyflow_pro` entitlement. Profile and the Pro screen both provide purchase restoration. If no products appear, verify the platform SDK key, store connection, product status, current offering, and entitlement attachment in RevenueCat. Purchase, restore, and entitlement behavior still require sandbox testing on a real Android or iOS store build before claiming billing is live.
+In the app, open **Profile > StudyFlow Pro** to view the localized lifetime price and make a one-time purchase; there is no subscription or recurring charge. A successful purchase unlocks premium Analytics only when RevenueCat reports the active `studyflow_pro` entitlement. Planner, notes, focus sessions, goals, and streaks remain available without Pro. Profile and the Pro screen both provide purchase restoration. If no product appears, verify the platform SDK key, store connection, non-consumable product status, `default` offering's `lifetime` package, and entitlement attachment in RevenueCat. Purchase, clean-device restore, and entitlement behavior still require sandbox testing on a real Android or iOS store build before claiming billing is live.
 
 ## Data and security
 

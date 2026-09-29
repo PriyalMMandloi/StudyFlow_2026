@@ -3,7 +3,7 @@ import 'dart:developer' as developer;
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart'
-  show defaultTargetPlatform, kIsWeb, TargetPlatform;
+    show defaultTargetPlatform, kIsWeb, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,8 +19,10 @@ const _userDataLoadTimeout = Duration(seconds: 20);
 const _profilePhotosBucket = 'profile-photos';
 const _profilePhotoUrlLifetimeSeconds = 604800;
 
-Future<String> _createProfilePhotoSignedUrl(String path) =>
-  Supabase.instance.client.storage
+Future<String> _createProfilePhotoSignedUrl(String path) => Supabase
+    .instance
+    .client
+    .storage
     .from(_profilePhotosBucket)
     .createSignedUrl(path, _profilePhotoUrlLifetimeSeconds);
 
@@ -78,9 +80,7 @@ Future<void> main() async {
   const androidRevenueCatApiKey = String.fromEnvironment(
     'REVENUECAT_ANDROID_API_KEY',
   );
-  const iosRevenueCatApiKey = String.fromEnvironment(
-    'REVENUECAT_IOS_API_KEY',
-  );
+  const iosRevenueCatApiKey = String.fromEnvironment('REVENUECAT_IOS_API_KEY');
   final revenueCatApiKey = switch (defaultTargetPlatform) {
     TargetPlatform.android => androidRevenueCatApiKey,
     TargetPlatform.iOS => iosRevenueCatApiKey,
@@ -99,9 +99,7 @@ Future<void> _configureRevenueCat(String apiKey) async {
     if (!await Purchases.isConfigured) {
       await Purchases.configure(PurchasesConfiguration(apiKey));
     }
-
-  } catch (_) {
-  }
+  } catch (_) {}
 }
 
 Future<void> _syncRevenueCatUser(User? user) async {
@@ -116,8 +114,7 @@ Future<void> _syncRevenueCatUser(User? user) async {
     } else {
       await Purchases.logIn(user.id);
     }
-  } catch (_) {
-  }
+  } catch (_) {}
 }
 
 Future<void> _logOutRevenueCat() async {
@@ -128,8 +125,7 @@ Future<void> _logOutRevenueCat() async {
     if (!await Purchases.isConfigured) return;
 
     await Purchases.logOut();
-  } catch (_) {
-  }
+  } catch (_) {}
 }
 
 const _studyFlowProEntitlement = 'studyflow_pro';
@@ -209,7 +205,10 @@ class StudyFlowTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white.withValues(alpha: 0.55),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         hintStyle: TextStyle(color: muted.withValues(alpha: 0.7), fontSize: 14),
         labelStyle: const TextStyle(color: muted, fontSize: 14),
         border: OutlineInputBorder(
@@ -253,19 +252,35 @@ class StudyFlowTheme {
 
     return base.copyWith(
       textTheme: base.textTheme.copyWith(
-        headlineLarge: const TextStyle(fontSize: 32, fontWeight: FontWeight.w800, color: charcoal, letterSpacing: -0.9),
-        headlineMedium: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: charcoal, letterSpacing: -0.7),
-        titleLarge: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, color: charcoal),
-        titleMedium: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: charcoal),
+        headlineLarge: const TextStyle(
+          fontSize: 32,
+          fontWeight: FontWeight.w800,
+          color: charcoal,
+          letterSpacing: -0.9,
+        ),
+        headlineMedium: const TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.w800,
+          color: charcoal,
+          letterSpacing: -0.7,
+        ),
+        titleLarge: const TextStyle(
+          fontSize: 22,
+          fontWeight: FontWeight.w700,
+          color: charcoal,
+        ),
+        titleMedium: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          color: charcoal,
+        ),
         bodyLarge: const TextStyle(fontSize: 16, color: charcoal),
         bodyMedium: const TextStyle(fontSize: 14, color: charcoal),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: Colors.white.withValues(alpha: 0.75),
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
         titleTextStyle: const TextStyle(
           color: charcoal,
           fontSize: 22,
@@ -276,9 +291,7 @@ class StudyFlowTheme {
         backgroundColor: const Color(0xCC1F2B25),
         contentTextStyle: const TextStyle(color: Colors.white),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
     );
   }
@@ -390,13 +403,15 @@ class GlassContainer extends StatelessWidget {
       color: effectiveColor,
       borderRadius: BorderRadius.circular(radius),
       border: border ?? Border.all(color: const Color(0x26FFFFFF), width: 1),
-      boxShadow: boxShadow ?? [
-        BoxShadow(
-          color: Colors.black.withValues(alpha: 0.04),
-          blurRadius: 16,
-          offset: const Offset(0, 8),
-        ),
-      ],
+      boxShadow:
+          boxShadow ??
+          [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+            ),
+          ],
     );
 
     final content = Container(
@@ -492,13 +507,15 @@ class GlassButton extends StatelessWidget {
       icon: icon == null ? const SizedBox.shrink() : Icon(icon),
       label: Text(label),
       style: FilledButton.styleFrom(
-        backgroundColor: filled ? StudyFlowTheme.sage : Colors.white.withValues(alpha: 0.45),
+        backgroundColor: filled
+            ? StudyFlowTheme.sage
+            : Colors.white.withValues(alpha: 0.45),
         foregroundColor: filled ? Colors.white : StudyFlowTheme.charcoal,
         minimumSize: Size.fromHeight(height),
-        side: filled ? null : const BorderSide(color: Color(0x2A5C8D72), width: 1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-        ),
+        side: filled
+            ? null
+            : const BorderSide(color: Color(0x2A5C8D72), width: 1),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       ),
     );
 
@@ -558,17 +575,37 @@ class SectionHeader extends StatelessWidget {
   final String title;
   final String? subtitle;
   final TextAlign? textAlign;
-  const SectionHeader({super.key, required this.title, this.subtitle, this.textAlign});
+  const SectionHeader({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.textAlign,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: -0.4)),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.4,
+          ),
+        ),
         if (subtitle != null) ...[
           const SizedBox(height: 4),
-          Text(subtitle!, style: TextStyle(color: StudyFlowTheme.muted, fontSize: 12.5, fontWeight: FontWeight.w600), textAlign: textAlign),
+          Text(
+            subtitle!,
+            style: TextStyle(
+              color: StudyFlowTheme.muted,
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: textAlign,
+          ),
         ],
       ],
     );
@@ -694,10 +731,24 @@ class ProgressRing extends StatelessWidget {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('${(value * 100).round()}%', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, color: StudyFlowTheme.charcoal)),
+              Text(
+                '${(value * 100).round()}%',
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: StudyFlowTheme.charcoal,
+                ),
+              ),
               if (label != null) ...[
                 const SizedBox(height: 3),
-                Text(label!, style: TextStyle(color: StudyFlowTheme.muted, fontSize: 11, fontWeight: FontWeight.w600)),
+                Text(
+                  label!,
+                  style: TextStyle(
+                    color: StudyFlowTheme.muted,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ],
           ),
@@ -712,7 +763,13 @@ class StatTile extends StatelessWidget {
   final String value;
   final String label;
   final Color? accent;
-  const StatTile({super.key, required this.icon, required this.value, required this.label, this.accent});
+  const StatTile({
+    super.key,
+    required this.icon,
+    required this.value,
+    required this.label,
+    this.accent,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -724,18 +781,37 @@ class StatTile extends StatelessWidget {
             width: 42,
             height: 42,
             decoration: BoxDecoration(
-              color: (accent ?? StudyFlowTheme.sageSoft).withValues(alpha: 0.75),
+              color: (accent ?? StudyFlowTheme.sageSoft).withValues(
+                alpha: 0.75,
+              ),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(icon, color: accent == null ? StudyFlowTheme.sageStrong : Colors.white),
+            child: Icon(
+              icon,
+              color: accent == null ? StudyFlowTheme.sageStrong : Colors.white,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(value, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18, letterSpacing: -0.4)),
-                Text(label, style: TextStyle(color: StudyFlowTheme.muted, fontSize: 12, fontWeight: FontWeight.w600)),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 18,
+                    letterSpacing: -0.4,
+                  ),
+                ),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: StudyFlowTheme.muted,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
@@ -821,12 +897,15 @@ class StudyFlowData extends ChangeNotifier {
         final storedUsername = (profile['username'] as String?)?.trim();
         final storedDisplayName = (profile['display_name'] as String?)?.trim();
         profileDisplayName =
-            (storedUsername?.isNotEmpty == true ? storedUsername : storedDisplayName)
-                ?.isNotEmpty == true
+            (storedUsername?.isNotEmpty == true
+                        ? storedUsername
+                        : storedDisplayName)
+                    ?.isNotEmpty ==
+                true
             ? (storedUsername?.isNotEmpty == true
-                    ? storedUsername!
-                    : storedDisplayName!)
-                : fallbackName;
+                  ? storedUsername!
+                  : storedDisplayName!)
+            : fallbackName;
         profileAvatarPath = profile['avatar_url'] as String?;
         final avatarPath = profileAvatarPath;
         if (avatarPath != null) {
@@ -931,20 +1010,19 @@ class StudyFlowData extends ChangeNotifier {
         }
       }
     }
-
   }
 
   Map<String, dynamic> _stateJson() => {
-        'schemaVersion': 1,
-        'goalMinutes': goalMinutes,
-        'completedMinutes': completedMinutes,
-        'completedTasks': completedTasks,
-        'weeklyMinutes': [...weeklyMinutes],
-        'activityCounts': {
-          for (final entry in _activityCounts.entries)
-            _dateOnly(entry.key).toIso8601String().substring(0, 10): entry.value,
-        },
-      };
+    'schemaVersion': 1,
+    'goalMinutes': goalMinutes,
+    'completedMinutes': completedMinutes,
+    'completedTasks': completedTasks,
+    'weeklyMinutes': [...weeklyMinutes],
+    'activityCounts': {
+      for (final entry in _activityCounts.entries)
+        _dateOnly(entry.key).toIso8601String().substring(0, 10): entry.value,
+    },
+  };
 
   void setProfileAvatar({required String? path, required String? url}) {
     profileAvatarPath = path;
@@ -1066,7 +1144,10 @@ class StudyFlowData extends ChangeNotifier {
     }
   }
 
-  Future<void> recordTask({required bool completed, required int minutes}) async {
+  Future<void> recordTask({
+    required bool completed,
+    required int minutes,
+  }) async {
     final previous = _stateJson();
     final dayIndex = DateTime.now().weekday - 1;
     if (completed) {
@@ -1077,8 +1158,9 @@ class StudyFlowData extends ChangeNotifier {
     } else {
       if (completedTasks > 0) completedTasks--;
       completedMinutes = (completedMinutes - minutes).clamp(0, 100000).toInt();
-      weeklyMinutes[dayIndex] =
-          (weeklyMinutes[dayIndex] - minutes).clamp(0, 100000).toInt();
+      weeklyMinutes[dayIndex] = (weeklyMinutes[dayIndex] - minutes)
+          .clamp(0, 100000)
+          .toInt();
       _updateActivity(DateTime.now(), -1);
     }
     notifyListeners();
@@ -1106,8 +1188,9 @@ class StudyFlowData extends ChangeNotifier {
     }
   }
 
-  double get goalProgress =>
-      goalMinutes <= 0 ? 0.0 : (completedMinutes / goalMinutes).clamp(0.0, 1.0).toDouble();
+  double get goalProgress => goalMinutes <= 0
+      ? 0.0
+      : (completedMinutes / goalMinutes).clamp(0.0, 1.0).toDouble();
 }
 
 class AuthGate extends StatefulWidget {
@@ -1152,7 +1235,8 @@ class _AuthGateState extends State<AuthGate> {
     return StreamBuilder<AuthState>(
       stream: Supabase.instance.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
-        final user = snapshot.data?.session?.user ??
+        final user =
+            snapshot.data?.session?.user ??
             Supabase.instance.client.auth.currentUser;
         if (user == null) return const LoginScreen();
 
@@ -1182,7 +1266,10 @@ class _AuthGateState extends State<AuthGate> {
                         FilledButton(
                           onPressed: () {
                             setState(() {});
-                            StudyFlowData.instance.loadForUser(user, force: true);
+                            StudyFlowData.instance.loadForUser(
+                              user,
+                              force: true,
+                            );
                           },
                           child: const Text('Retry'),
                         ),
@@ -1192,7 +1279,7 @@ class _AuthGateState extends State<AuthGate> {
                 ),
               );
             }
-            return const MainNavigation();
+            return MainNavigation(key: _mainNavigationKey);
           },
         );
       },
@@ -1253,15 +1340,15 @@ class _LoginScreenState extends State<LoginScreen> {
     } on AuthException catch (e) {
       _showMessage(_supabaseAuthMessage(e));
     } catch (e, stackTrace) {
-  developer.log(
-    'Unexpected error during account creation.',
-    name: 'StudyFlowAuth',
-    error: e,
-    stackTrace: stackTrace,
-  );
+      developer.log(
+        'Unexpected error during account creation.',
+        name: 'StudyFlowAuth',
+        error: e,
+        stackTrace: stackTrace,
+      );
 
-  _showMessage('Account creation error: $e');
-} finally {
+      _showMessage('Account creation error: $e');
+    } finally {
       if (mounted) {
         setState(() => _loading = false);
       }
@@ -1288,9 +1375,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showMessage(String message) {
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -1321,19 +1408,39 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(24),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFF7FA991).withValues(alpha: 0.25),
+                                color: const Color(
+                                  0xFF7FA991,
+                                ).withValues(alpha: 0.25),
                                 blurRadius: 18,
                                 offset: const Offset(0, 12),
                               ),
                             ],
                           ),
-                          child: const Icon(Icons.menu_book_rounded, size: 38, color: Colors.white),
+                          child: const Icon(
+                            Icons.menu_book_rounded,
+                            size: 38,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 28),
-                      const Text('Welcome back', style: TextStyle(fontSize: 30, fontWeight: FontWeight.w800, letterSpacing: -0.8)),
+                      const Text(
+                        'Welcome back',
+                        style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.8,
+                        ),
+                      ),
                       const SizedBox(height: 8),
-                      Text('Sign in with your email and password.', style: TextStyle(color: StudyFlowTheme.muted, fontSize: 15, fontWeight: FontWeight.w500)),
+                      Text(
+                        'Sign in with your email and password.',
+                        style: TextStyle(
+                          color: StudyFlowTheme.muted,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                       const SizedBox(height: 28),
                       GlassTextField(
                         controller: _emailController,
@@ -1341,7 +1448,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         hintText: 'you@example.com',
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
-                        prefixIcon: const Icon(Icons.email_outlined, color: StudyFlowTheme.sageStrong),
+                        prefixIcon: const Icon(
+                          Icons.email_outlined,
+                          color: StudyFlowTheme.sageStrong,
+                        ),
                       ),
                       const SizedBox(height: 18),
                       GlassTextField(
@@ -1351,10 +1461,19 @@ class _LoginScreenState extends State<LoginScreen> {
                         obscureText: _obscurePassword,
                         textInputAction: TextInputAction.done,
                         onSubmitted: (_) => _signIn(),
-                        prefixIcon: const Icon(Icons.lock_outline, color: StudyFlowTheme.sageStrong),
+                        prefixIcon: const Icon(
+                          Icons.lock_outline,
+                          color: StudyFlowTheme.sageStrong,
+                        ),
                         suffixIcon: IconButton(
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                          icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                          ),
                           color: StudyFlowTheme.muted,
                         ),
                       ),
@@ -1366,11 +1485,26 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: _loading ? null : _signIn,
                           style: FilledButton.styleFrom(
                             backgroundColor: StudyFlowTheme.sage,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
                           ),
                           child: _loading
-                              ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                              : const Text('Sign In', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'Sign In',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
                         ),
                       ),
                       const SizedBox(height: 14),
@@ -1396,7 +1530,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (_) => ForgotPasswordScreen(
-                                      initialEmail: _emailController.text.trim(),
+                                      initialEmail: _emailController.text
+                                          .trim(),
                                     ),
                                   ),
                                 );
@@ -1429,7 +1564,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _loading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -1493,7 +1629,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       }
 
       if (!mounted) return;
-      _showMessage('Account created successfully. You can now sign in with your email and password.');
+      _showMessage(
+        'Account created successfully. You can now sign in with your email and password.',
+      );
       Navigator.of(context).pop();
     } on AuthException catch (e) {
       final message = e.message.toLowerCase();
@@ -1501,13 +1639,17 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
           message.contains('already exists') ||
           message.contains('duplicate') ||
           message.contains('user with this email already exists')) {
-        _showMessage('An account with this email already exists. Please sign in instead.');
+        _showMessage(
+          'An account with this email already exists. Please sign in instead.',
+        );
       } else if (message.contains('password')) {
         _showMessage('Please choose a stronger password.');
       } else if (message.contains('network')) {
         _showMessage('Network issue. Please check your connection and retry.');
       } else {
-        _showMessage(e.message.isNotEmpty ? e.message : 'Could not create your account.');
+        _showMessage(
+          e.message.isNotEmpty ? e.message : 'Could not create your account.',
+        );
       }
     } catch (e, stackTrace) {
       developer.log(
@@ -1527,9 +1669,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   void _showMessage(String message) {
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -1550,9 +1692,23 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Create your account', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -0.7)),
+                      const Text(
+                        'Create your account',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.7,
+                        ),
+                      ),
                       const SizedBox(height: 8),
-                      Text('Use your email and a secure password to get started.', style: TextStyle(color: StudyFlowTheme.muted, fontSize: 14.5, fontWeight: FontWeight.w500)),
+                      Text(
+                        'Use your email and a secure password to get started.',
+                        style: TextStyle(
+                          color: StudyFlowTheme.muted,
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                       const SizedBox(height: 28),
                       GlassTextField(
                         controller: _emailController,
@@ -1560,7 +1716,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         hintText: 'you@example.com',
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
-                        prefixIcon: const Icon(Icons.email_outlined, color: StudyFlowTheme.sageStrong),
+                        prefixIcon: const Icon(
+                          Icons.email_outlined,
+                          color: StudyFlowTheme.sageStrong,
+                        ),
                       ),
                       const SizedBox(height: 18),
                       GlassTextField(
@@ -1568,7 +1727,10 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         labelText: 'Username',
                         hintText: 'studyflow_user',
                         textInputAction: TextInputAction.next,
-                        prefixIcon: const Icon(Icons.person_outline, color: StudyFlowTheme.sageStrong),
+                        prefixIcon: const Icon(
+                          Icons.person_outline,
+                          color: StudyFlowTheme.sageStrong,
+                        ),
                       ),
                       const SizedBox(height: 18),
                       GlassTextField(
@@ -1577,10 +1739,19 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         hintText: 'Create a password',
                         obscureText: _obscurePassword,
                         textInputAction: TextInputAction.next,
-                        prefixIcon: const Icon(Icons.lock_outline, color: StudyFlowTheme.sageStrong),
+                        prefixIcon: const Icon(
+                          Icons.lock_outline,
+                          color: StudyFlowTheme.sageStrong,
+                        ),
                         suffixIcon: IconButton(
-                          onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                          icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                          onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                          ),
                           color: StudyFlowTheme.muted,
                         ),
                       ),
@@ -1592,10 +1763,20 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                         obscureText: _obscureConfirmPassword,
                         textInputAction: TextInputAction.done,
                         onSubmitted: (_) => _createAccount(),
-                        prefixIcon: const Icon(Icons.lock_reset_rounded, color: StudyFlowTheme.sageStrong),
+                        prefixIcon: const Icon(
+                          Icons.lock_reset_rounded,
+                          color: StudyFlowTheme.sageStrong,
+                        ),
                         suffixIcon: IconButton(
-                          onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
-                          icon: Icon(_obscureConfirmPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                          onPressed: () => setState(
+                            () => _obscureConfirmPassword =
+                                !_obscureConfirmPassword,
+                          ),
+                          icon: Icon(
+                            _obscureConfirmPassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                          ),
                           color: StudyFlowTheme.muted,
                         ),
                       ),
@@ -1607,11 +1788,26 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                           onPressed: _loading ? null : _createAccount,
                           style: FilledButton.styleFrom(
                             backgroundColor: StudyFlowTheme.sage,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
                           ),
                           child: _loading
-                              ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                              : const Text('Create account', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'Create account',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
                         ),
                       ),
                     ],
@@ -1636,8 +1832,9 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  late final TextEditingController _emailController =
-      TextEditingController(text: widget.initialEmail ?? '');
+  late final TextEditingController _emailController = TextEditingController(
+    text: widget.initialEmail ?? '',
+  );
   bool _loading = false;
 
   @override
@@ -1659,7 +1856,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     try {
       await Supabase.instance.client.auth.resetPasswordForEmail(email);
       if (!mounted) return;
-      _showMessage('If an account exists for $email, a password reset email has been sent.');
+      _showMessage(
+        'If an account exists for $email, a password reset email has been sent.',
+      );
       Navigator.of(context).pop();
     } on AuthException catch (e) {
       _showMessage(_supabaseResetMessage(e));
@@ -1670,7 +1869,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         error: e,
         stackTrace: stackTrace,
       );
-      _showMessage('Could not send the password reset email. Please try again.');
+      _showMessage(
+        'Could not send the password reset email. Please try again.',
+      );
     } finally {
       if (mounted) {
         setState(() => _loading = false);
@@ -1692,9 +1893,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   void _showMessage(String message) {
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -1715,9 +1916,23 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Reset your password', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -0.7)),
+                      const Text(
+                        'Reset your password',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.7,
+                        ),
+                      ),
                       const SizedBox(height: 8),
-                      Text('We will send a password reset email to your account if it exists.', style: TextStyle(color: StudyFlowTheme.muted, fontSize: 14.5, fontWeight: FontWeight.w500)),
+                      Text(
+                        'We will send a password reset email to your account if it exists.',
+                        style: TextStyle(
+                          color: StudyFlowTheme.muted,
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                       const SizedBox(height: 28),
                       GlassTextField(
                         controller: _emailController,
@@ -1726,7 +1941,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.done,
                         onSubmitted: (_) => _sendResetLink(),
-                        prefixIcon: const Icon(Icons.email_outlined, color: StudyFlowTheme.sageStrong),
+                        prefixIcon: const Icon(
+                          Icons.email_outlined,
+                          color: StudyFlowTheme.sageStrong,
+                        ),
                       ),
                       const SizedBox(height: 24),
                       SizedBox(
@@ -1736,11 +1954,26 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           onPressed: _loading ? null : _sendResetLink,
                           style: FilledButton.styleFrom(
                             backgroundColor: StudyFlowTheme.sage,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
                           ),
                           child: _loading
-                              ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                              : const Text('Send reset email', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
+                              ? const SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Text(
+                                  'Send reset email',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
                         ),
                       ),
                     ],
@@ -1755,6 +1988,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   }
 }
 
+final _mainNavigationKey = GlobalKey<_MainNavigationState>();
+
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
 
@@ -1764,6 +1999,11 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
+
+  void goHome() {
+    if (_currentIndex == 0) return;
+    setState(() => _currentIndex = 0);
+  }
 
   final List<Widget> _screens = const [
     DashboardScreen(),
@@ -1777,10 +2017,7 @@ class _MainNavigationState extends State<MainNavigation> {
     return StudyFlowBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        body: IndexedStack(
-          index: _currentIndex,
-          children: _screens,
-        ),
+        body: IndexedStack(index: _currentIndex, children: _screens),
         bottomNavigationBar: SafeArea(
           top: false,
           child: StudyFlowNavBar(
@@ -1860,16 +2097,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
         final chapters = StudyPlanStore.instance.chapters;
         final storeError = StudyPlanStore.instance.error;
         final isLoading = StudyPlanStore.instance.isLoading;
-        final completedChapters =
-            chapters.where((chapter) => chapter.isCompleted).length;
-        final progress =
-            chapters.isEmpty ? 0.0 : completedChapters / chapters.length;
+        final completedChapters = chapters
+            .where((chapter) => chapter.isCompleted)
+            .length;
+        final progress = chapters.isEmpty
+            ? 0.0
+            : completedChapters / chapters.length;
         final rawName = StudyFlowData.instance.profileDisplayName.trim();
-        final firstName =
-            rawName.isNotEmpty ? rawName.split(' ').first : 'there';
-        final focusChapter = chapters
-                .where((chapter) => !chapter.isCompleted)
-                .firstOrNull ??
+        final firstName = rawName.isNotEmpty
+            ? rawName.split(' ').first
+            : 'there';
+        final focusChapter =
+            chapters.where((chapter) => !chapter.isCompleted).firstOrNull ??
             (chapters.isEmpty ? null : chapters.first);
         final todayTasks = chapters
             .expand((chapter) => chapter.tasks)
@@ -1880,7 +2119,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
         return LayoutBuilder(
           builder: (context, constraints) {
-            final contentWidth = constraints.maxWidth > 560 ? 560.0 : constraints.maxWidth;
+            final contentWidth = constraints.maxWidth > 560
+                ? 560.0
+                : constraints.maxWidth;
 
             return SafeArea(
               child: Center(
@@ -1933,12 +2174,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: Colors.white.withValues(alpha: 0.85),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.85,
+                                      ),
                                       width: 3,
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.08),
+                                        color: Colors.black.withValues(
+                                          alpha: 0.08,
+                                        ),
                                         blurRadius: 18,
                                         offset: const Offset(0, 10),
                                       ),
@@ -1956,7 +2201,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                       ),
                       SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 8,
+                        ),
                         sliver: SliverToBoxAdapter(
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 260),
@@ -1973,7 +2221,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         height: 46,
                                         decoration: BoxDecoration(
                                           color: const Color(0xFFEDE8FF),
-                                          borderRadius: BorderRadius.circular(15),
+                                          borderRadius: BorderRadius.circular(
+                                            15,
+                                          ),
                                         ),
                                         alignment: Alignment.center,
                                         child: Text(
@@ -2026,10 +2276,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 const SizedBox(width: 18),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       ProgressPill(
-                                        text: chapters.isEmpty ? 'START HERE' : 'STUDY PLAN',
+                                        text: chapters.isEmpty
+                                            ? 'START HERE'
+                                            : 'STUDY PLAN',
                                         color: Colors.white,
                                       ),
                                       const SizedBox(height: 12),
@@ -2105,14 +2358,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(15),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Container(
                                           width: 42,
                                           height: 42,
                                           decoration: BoxDecoration(
                                             color: const Color(0xFFEDE8FF),
-                                            borderRadius: BorderRadius.circular(14),
+                                            borderRadius: BorderRadius.circular(
+                                              14,
+                                            ),
                                           ),
                                           child: const Icon(
                                             Icons.timer_rounded,
@@ -2154,14 +2410,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   child: Padding(
                                     padding: const EdgeInsets.all(15),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Container(
                                           width: 42,
                                           height: 42,
                                           decoration: BoxDecoration(
                                             color: const Color(0xFFFFF1D7),
-                                            borderRadius: BorderRadius.circular(14),
+                                            borderRadius: BorderRadius.circular(
+                                              14,
+                                            ),
                                           ),
                                           child: const Icon(
                                             Icons.local_fire_department_rounded,
@@ -2288,9 +2547,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                     const SizedBox(height: 16),
                                     FilledButton.icon(
-                                      onPressed: () => _openChapterEditor(context),
+                                      onPressed: () =>
+                                          _openChapterEditor(context),
                                       icon: const Icon(Icons.add_rounded),
-                                      label: const Text('Create Your First Chapter'),
+                                      label: const Text(
+                                        'Create Your First Chapter',
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -2350,16 +2612,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               vertical: 6,
                                             ),
                                             child: InkWell(
-                                              borderRadius: BorderRadius.circular(18),
+                                              borderRadius:
+                                                  BorderRadius.circular(18),
                                               onTap: () => _toggleChapterTask(
                                                 context,
                                                 task,
                                               ),
                                               child: Container(
-                                                padding: const EdgeInsets.all(12),
+                                                padding: const EdgeInsets.all(
+                                                  12,
+                                                ),
                                                 decoration: BoxDecoration(
-                                                  color: const Color(0xFFF5F2FF),
-                                                  borderRadius: BorderRadius.circular(18),
+                                                  color: const Color(
+                                                    0xFFF5F2FF,
+                                                  ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(18),
                                                 ),
                                                 child: Row(
                                                   children: [
@@ -2368,34 +2636,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                       height: 34,
                                                       decoration: BoxDecoration(
                                                         color: Colors.white,
-                                                        borderRadius: BorderRadius.circular(12),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              12,
+                                                            ),
                                                       ),
                                                       child: const Icon(
-                                                        Icons.check_circle_outline_rounded,
-                                                        color: StudyFlowTheme.sageStrong,
+                                                        Icons
+                                                            .check_circle_outline_rounded,
+                                                        color: StudyFlowTheme
+                                                            .sageStrong,
                                                       ),
                                                     ),
                                                     const SizedBox(width: 12),
                                                     Expanded(
                                                       child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
                                                         children: [
                                                           Text(
                                                             task.title,
-                                                            style: const TextStyle(
-                                                              fontWeight: FontWeight.w800,
-                                                              fontSize: 14,
-                                                            ),
+                                                            style:
+                                                                const TextStyle(
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w800,
+                                                                  fontSize: 14,
+                                                                ),
                                                           ),
-                                                          const SizedBox(height: 3),
+                                                          const SizedBox(
+                                                            height: 3,
+                                                          ),
                                                           Text(
-                                                            task.estimatedMinutes == null
+                                                            task.estimatedMinutes ==
+                                                                    null
                                                                 ? 'Flexible session'
                                                                 : '${task.estimatedMinutes} minutes',
                                                             style: TextStyle(
-                                                              color: StudyFlowTheme.muted,
+                                                              color:
+                                                                  StudyFlowTheme
+                                                                      .muted,
                                                               fontSize: 12,
-                                                              fontWeight: FontWeight.w600,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
                                                             ),
                                                           ),
                                                         ],
@@ -2458,18 +2743,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       child: Padding(
                                         padding: const EdgeInsets.all(14),
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Container(
                                               width: 36,
                                               height: 36,
                                               decoration: BoxDecoration(
                                                 color: const Color(0xFFEDE8FF),
-                                                borderRadius: BorderRadius.circular(12),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
                                               ),
                                               child: const Icon(
                                                 Icons.auto_stories_rounded,
-                                                color: StudyFlowTheme.sageStrong,
+                                                color:
+                                                    StudyFlowTheme.sageStrong,
                                                 size: 20,
                                               ),
                                             ),
@@ -2524,7 +2812,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 const SizedBox(width: 13),
                                 const Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'Small steps, big progress.',
@@ -2587,8 +2876,9 @@ Future<StudyChapterDraft?> _showStudyChapterDialog(
 }) async {
   final titleController = TextEditingController(text: chapter?.title ?? '');
   final subjectController = TextEditingController(text: chapter?.subject ?? '');
-  final descriptionController =
-      TextEditingController(text: chapter?.description ?? '');
+  final descriptionController = TextEditingController(
+    text: chapter?.description ?? '',
+  );
   final durationController = TextEditingController(
     text: (chapter?.estimatedMinutes ?? 30).toString(),
   );
@@ -2611,20 +2901,26 @@ Future<StudyChapterDraft?> _showStudyChapterDialog(
               TextField(
                 controller: subjectController,
                 textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(labelText: 'Subject or category'),
+                decoration: const InputDecoration(
+                  labelText: 'Subject or category',
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: descriptionController,
                 minLines: 2,
                 maxLines: 4,
-                decoration: const InputDecoration(labelText: 'Description (optional)'),
+                decoration: const InputDecoration(
+                  labelText: 'Description (optional)',
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
                 controller: durationController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Estimated minutes'),
+                decoration: const InputDecoration(
+                  labelText: 'Estimated minutes',
+                ),
               ),
             ],
           ),
@@ -2639,10 +2935,15 @@ Future<StudyChapterDraft?> _showStudyChapterDialog(
               final title = titleController.text.trim();
               final subject = subjectController.text.trim();
               final minutes = int.tryParse(durationController.text.trim());
-              if (title.isEmpty || subject.isEmpty || minutes == null || minutes <= 0) {
+              if (title.isEmpty ||
+                  subject.isEmpty ||
+                  minutes == null ||
+                  minutes <= 0) {
                 ScaffoldMessenger.of(dialogContext).showSnackBar(
                   const SnackBar(
-                    content: Text('Enter a title, subject, and positive duration.'),
+                    content: Text(
+                      'Enter a title, subject, and positive duration.',
+                    ),
                   ),
                 );
                 return;
@@ -2696,7 +2997,9 @@ Future<StudyChapterTaskDraft?> _showStudyTaskDialog(
             TextField(
               controller: durationController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Estimated minutes (optional)'),
+              decoration: const InputDecoration(
+                labelText: 'Estimated minutes (optional)',
+              ),
             ),
           ],
         ),
@@ -2709,10 +3012,16 @@ Future<StudyChapterTaskDraft?> _showStudyTaskDialog(
             onPressed: () {
               final title = titleController.text.trim();
               final rawMinutes = durationController.text.trim();
-              final minutes = rawMinutes.isEmpty ? null : int.tryParse(rawMinutes);
-              if (title.isEmpty || (rawMinutes.isNotEmpty && (minutes == null || minutes <= 0))) {
+              final minutes = rawMinutes.isEmpty
+                  ? null
+                  : int.tryParse(rawMinutes);
+              if (title.isEmpty ||
+                  (rawMinutes.isNotEmpty &&
+                      (minutes == null || minutes <= 0))) {
                 ScaffoldMessenger.of(dialogContext).showSnackBar(
-                  const SnackBar(content: Text('Enter a title and valid optional duration.')),
+                  const SnackBar(
+                    content: Text('Enter a title and valid optional duration.'),
+                  ),
                 );
                 return;
               }
@@ -2798,7 +3107,9 @@ void _showStudyPlanError(
     stackTrace: stackTrace,
   );
   ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text('Could not save your study plan. Please try again.')),
+    const SnackBar(
+      content: Text('Could not save your study plan. Please try again.'),
+    ),
   );
 }
 
@@ -2908,7 +3219,10 @@ class StudyChapterCard extends StatelessWidget {
                     if (onEdit != null)
                       const PopupMenuItem(value: 'edit', child: Text('Edit')),
                     if (onDelete != null)
-                      const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Text('Delete'),
+                      ),
                   ],
                 ),
             ],
@@ -2961,7 +3275,10 @@ class StudyChapterCard extends StatelessWidget {
                   if (task.estimatedMinutes != null)
                     Text(
                       '${task.estimatedMinutes}m',
-                      style: TextStyle(color: StudyFlowTheme.muted, fontSize: 12),
+                      style: TextStyle(
+                        color: StudyFlowTheme.muted,
+                        fontSize: 12,
+                      ),
                     ),
                   if (onEditTask != null || onDeleteTask != null)
                     PopupMenuButton<String>(
@@ -2972,9 +3289,15 @@ class StudyChapterCard extends StatelessWidget {
                       },
                       itemBuilder: (context) => [
                         if (onEditTask != null)
-                          const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                          const PopupMenuItem(
+                            value: 'edit',
+                            child: Text('Edit'),
+                          ),
                         if (onDeleteTask != null)
-                          const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                          const PopupMenuItem(
+                            value: 'delete',
+                            child: Text('Delete'),
+                          ),
                       ],
                     ),
                 ],
@@ -3021,18 +3344,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (image == null) return;
 
       final extension = image.name.split('.').last.toLowerCase();
-      final mimeType = image.mimeType ?? switch (extension) {
-        'png' => 'image/png',
-        'webp' => 'image/webp',
-        'jpg' || 'jpeg' => 'image/jpeg',
-        _ => '',
-      };
+      final mimeType =
+          image.mimeType ??
+          switch (extension) {
+            'png' => 'image/png',
+            'webp' => 'image/webp',
+            'jpg' || 'jpeg' => 'image/jpeg',
+            _ => '',
+          };
       if (!const {'image/jpeg', 'image/png', 'image/webp'}.contains(mimeType)) {
         throw const FormatException('Choose a JPEG, PNG, or WebP image.');
       }
 
       final path = '${user.id}/avatar';
-      final storage = Supabase.instance.client.storage.from(_profilePhotosBucket);
+      final storage = Supabase.instance.client.storage.from(
+        _profilePhotosBucket,
+      );
       await storage.uploadBinary(
         path,
         await image.readAsBytes(),
@@ -3055,9 +3382,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         final message = error is FormatException
             ? error.message
             : 'Could not upload your photo. Check your connection and try again.';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
       }
     } finally {
       if (mounted) setState(() => _isUpdatingPhoto = false);
@@ -3121,8 +3448,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       await Purchases.logIn(user.id);
       final customerInfo = await Purchases.restorePurchases();
-      final restored = customerInfo.entitlements.active
-          .containsKey('studyflow_pro');
+      final restored = customerInfo.entitlements.active.containsKey(
+        'studyflow_pro',
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -3218,7 +3546,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ? const SizedBox(
                                 width: 16,
                                 height: 16,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
                               )
                             : const Icon(
                                 Icons.camera_alt_outlined,
@@ -3248,19 +3578,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
               const SizedBox(height: 18),
-              Text(name, textAlign: TextAlign.center, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
+              Text(
+                name,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.5,
+                ),
+              ),
               const SizedBox(height: 6),
-              Text(email, textAlign: TextAlign.center, style: TextStyle(color: StudyFlowTheme.muted, fontSize: 14, fontWeight: FontWeight.w600)),
+              Text(
+                email,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: StudyFlowTheme.muted,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 28),
 
               GlassCard(
                 radius: 20,
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  leading: Container(width: 46, height: 46, decoration: BoxDecoration(color: const Color(0xFFEAF5EE), borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.person_outline, color: StudyFlowTheme.sageStrong)),
-                  title: const Text('Username', style: TextStyle(fontWeight: FontWeight.w800)),
-                  subtitle: Padding(padding: const EdgeInsets.only(top: 4), child: Text(name, style: TextStyle(color: StudyFlowTheme.muted, fontWeight: FontWeight.w600))),
-                  trailing: const Icon(Icons.edit_outlined, color: StudyFlowTheme.muted),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  leading: Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAF5EE),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.person_outline,
+                      color: StudyFlowTheme.sageStrong,
+                    ),
+                  ),
+                  title: const Text(
+                    'Username',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      name,
+                      style: TextStyle(
+                        color: StudyFlowTheme.muted,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  trailing: const Icon(
+                    Icons.edit_outlined,
+                    color: StudyFlowTheme.muted,
+                  ),
                   onTap: () async {
                     final controller = TextEditingController(text: name);
                     final result = await showDialog<String>(
@@ -3270,7 +3645,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         content: TextField(
                           controller: controller,
                           autofocus: true,
-                          decoration: const InputDecoration(labelText: 'Username'),
+                          decoration: const InputDecoration(
+                            labelText: 'Username',
+                          ),
                         ),
                         actions: [
                           TextButton(
@@ -3278,7 +3655,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: const Text('Cancel'),
                           ),
                           FilledButton(
-                            onPressed: () => Navigator.of(dialogContext).pop(controller.text),
+                            onPressed: () => Navigator.of(
+                              dialogContext,
+                            ).pop(controller.text),
                             child: const Text('Save'),
                           ),
                         ],
@@ -3290,9 +3669,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     final value = result.trim();
                     final error = validateUsername(value);
                     if (error != null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(error)),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(error)));
                       return;
                     }
 
@@ -3306,7 +3685,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     } catch (error) {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(error is ArgumentError ? error.message.toString() : 'Could not update your username. Please try again.')),
+                          SnackBar(
+                            content: Text(
+                              error is ArgumentError
+                                  ? error.message.toString()
+                                  : 'Could not update your username. Please try again.',
+                            ),
+                          ),
                         );
                       }
                     }
@@ -3319,10 +3704,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
               GlassCard(
                 radius: 20,
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  leading: Container(width: 46, height: 46, decoration: BoxDecoration(color: const Color(0xFFEAF5EE), borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.email_outlined, color: StudyFlowTheme.sageStrong)),
-                  title: const Text('Email', style: TextStyle(fontWeight: FontWeight.w800)),
-                  subtitle: Padding(padding: const EdgeInsets.only(top: 4), child: Text(email, style: TextStyle(color: StudyFlowTheme.muted, fontWeight: FontWeight.w600))),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  leading: Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAF5EE),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.email_outlined,
+                      color: StudyFlowTheme.sageStrong,
+                    ),
+                  ),
+                  title: const Text(
+                    'Email',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      email,
+                      style: TextStyle(
+                        color: StudyFlowTheme.muted,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ),
               ),
 
@@ -3331,11 +3742,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
               GlassCard(
                 radius: 20,
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  leading: Container(width: 46, height: 46, decoration: BoxDecoration(color: const Color(0xFFEAF5EE), borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.lock_reset_rounded, color: StudyFlowTheme.sageStrong)),
-                  title: const Text('Reset password', style: TextStyle(fontWeight: FontWeight.w800)),
-                  subtitle: const Padding(padding: EdgeInsets.only(top: 4), child: Text('Send a recovery email for this account', style: TextStyle(fontWeight: FontWeight.w600))),
-                  trailing: const Icon(Icons.chevron_right, color: StudyFlowTheme.muted),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  leading: Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAF5EE),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.lock_reset_rounded,
+                      color: StudyFlowTheme.sageStrong,
+                    ),
+                  ),
+                  title: const Text(
+                    'Reset password',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: const Padding(
+                    padding: EdgeInsets.only(top: 4),
+                    child: Text(
+                      'Send a recovery email for this account',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    color: StudyFlowTheme.muted,
+                  ),
                   onTap: () {
                     if (context.mounted) {
                       Navigator.push(
@@ -3356,7 +3793,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               GlassCard(
                 radius: 20,
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   leading: Container(
                     width: 46,
                     height: 46,
@@ -3369,15 +3809,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: StudyFlowTheme.sageStrong,
                     ),
                   ),
-                  title: const Text('StudyFlow Pro', style: TextStyle(fontWeight: FontWeight.w800)),
+                  title: const Text(
+                    'StudyFlow Pro',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
                   subtitle: const Padding(
                     padding: EdgeInsets.only(top: 4),
-                    child: Text('Unlock detailed study analytics', style: TextStyle(fontWeight: FontWeight.w600)),
+                    child: Text(
+                      'Unlock detailed study analytics',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
                   ),
-                  trailing: const Icon(Icons.chevron_right, color: StudyFlowTheme.muted),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    color: StudyFlowTheme.muted,
+                  ),
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const StudyFlowProScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => const StudyFlowProScreen(),
+                    ),
                   ),
                 ),
               ),
@@ -3387,11 +3838,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
               GlassCard(
                 radius: 20,
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  leading: Container(width: 46, height: 46, decoration: BoxDecoration(color: const Color(0xFFEAF5EE), borderRadius: BorderRadius.circular(14)), child: const Icon(Icons.restore_outlined, color: StudyFlowTheme.sageStrong)),
-                  title: const Text('Restore purchases', style: TextStyle(fontWeight: FontWeight.w800)),
-                  subtitle: const Padding(padding: EdgeInsets.only(top: 4), child: Text('Restore Pro access on this account', style: TextStyle(fontWeight: FontWeight.w600))),
-                  trailing: _isRestoring ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.chevron_right, color: StudyFlowTheme.muted),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  leading: Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAF5EE),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.restore_outlined,
+                      color: StudyFlowTheme.sageStrong,
+                    ),
+                  ),
+                  title: const Text(
+                    'Restore purchases',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: const Padding(
+                    padding: EdgeInsets.only(top: 4),
+                    child: Text(
+                      'Restore Pro access on this account',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  trailing: _isRestoring
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(
+                          Icons.chevron_right,
+                          color: StudyFlowTheme.muted,
+                        ),
                   onTap: _isRestoring ? null : _restorePurchases,
                 ),
               ),
@@ -3411,10 +3894,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     }
                   },
                   icon: const Icon(Icons.logout, color: Colors.redAccent),
-                  label: const Text('Sign Out', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w800)),
+                  label: const Text(
+                    'Sign Out',
+                    style: TextStyle(
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Colors.redAccent),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
                   ),
                 ),
               ),
@@ -3425,6 +3916,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
+
 class PlannerScreen extends StatefulWidget {
   const PlannerScreen({super.key});
 
@@ -3503,9 +3995,23 @@ class _PlannerScreenState extends State<PlannerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Study Planner', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -0.7)),
+            const Text(
+              'Study Planner',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.7,
+              ),
+            ),
             const SizedBox(height: 6),
-            Text('Plan your study sessions and stay on track.', style: TextStyle(color: StudyFlowTheme.muted, fontSize: 14.5, fontWeight: FontWeight.w600)),
+            Text(
+              'Plan your study sessions and stay on track.',
+              style: TextStyle(
+                color: StudyFlowTheme.muted,
+                fontSize: 14.5,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             const SizedBox(height: 24),
             GlassContainer(
               radius: 22,
@@ -3514,7 +4020,17 @@ class _PlannerScreenState extends State<PlannerScreen> {
                 children: [
                   ...List.generate(4, (index) {
                     final date = DateTime.now().add(Duration(days: index));
-                    final label = index == 0 ? 'Today' : const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][date.weekday - 1];
+                    final label = index == 0
+                        ? 'Today'
+                        : const [
+                            'Mon',
+                            'Tue',
+                            'Wed',
+                            'Thu',
+                            'Fri',
+                            'Sat',
+                            'Sun',
+                          ][date.weekday - 1];
                     return [
                       if (index > 0) const SizedBox(width: 10),
                       Expanded(
@@ -3533,7 +4049,14 @@ class _PlannerScreenState extends State<PlannerScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Your chapters', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800, letterSpacing: -0.2)),
+                const Text(
+                  'Your chapters',
+                  style: TextStyle(
+                    fontSize: 19,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.2,
+                  ),
+                ),
                 FilledButton.icon(
                   onPressed: () => _openChapterEditor(context),
                   icon: const Icon(Icons.add_rounded),
@@ -3590,7 +4113,10 @@ class _PlannerScreenState extends State<PlannerScreen> {
                               index: index,
                               child: const SizedBox(
                                 height: 52,
-                                child: Icon(Icons.drag_handle_rounded, color: StudyFlowTheme.muted),
+                                child: Icon(
+                                  Icons.drag_handle_rounded,
+                                  color: StudyFlowTheme.muted,
+                                ),
                               ),
                             ),
                             Expanded(
@@ -3650,7 +4176,11 @@ class StudyPlanEmptyState extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.auto_stories_outlined, color: StudyFlowTheme.sageStrong, size: 38),
+              const Icon(
+                Icons.auto_stories_outlined,
+                color: StudyFlowTheme.sageStrong,
+                size: 38,
+              ),
               const SizedBox(height: 12),
               const Text(
                 "Let's create your study plan.",
@@ -3693,16 +4223,37 @@ class _PlannerDate extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 13),
       decoration: BoxDecoration(
-        gradient: selected ? const LinearGradient(colors: [Color(0xFF5F9C75), Color(0xFF407D5E)]) : null,
+        gradient: selected
+            ? const LinearGradient(
+                colors: [Color(0xFF5F9C75), Color(0xFF407D5E)],
+              )
+            : null,
         color: selected ? null : Colors.white.withValues(alpha: 0.28),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: selected ? const Color(0xFF5E9A74) : const Color(0x1F5E7B5A), width: 1),
+        border: Border.all(
+          color: selected ? const Color(0xFF5E9A74) : const Color(0x1F5E7B5A),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
-          Text(label, style: TextStyle(fontSize: 12, color: selected ? Colors.white70 : StudyFlowTheme.muted, fontWeight: FontWeight.w700)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: selected ? Colors.white70 : StudyFlowTheme.muted,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text(day, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: selected ? Colors.white : StudyFlowTheme.charcoal)),
+          Text(
+            day,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: selected ? Colors.white : StudyFlowTheme.charcoal,
+            ),
+          ),
         ],
       ),
     );
@@ -3726,12 +4277,10 @@ class FocusScreen extends StatefulWidget {
   });
 
   @override
-  State<FocusScreen> createState() =>
-      _FocusScreenState();
+  State<FocusScreen> createState() => _FocusScreenState();
 }
 
-class _FocusScreenState
-    extends State<FocusScreen> {
+class _FocusScreenState extends State<FocusScreen> {
   Timer? _timer;
 
   late int _remainingSeconds;
@@ -3742,8 +4291,7 @@ class _FocusScreenState
   void initState() {
     super.initState();
 
-    _remainingSeconds =
-        widget.durationMinutes * 60;
+    _remainingSeconds = widget.durationMinutes * 60;
   }
 
   @override
@@ -3763,31 +4311,28 @@ class _FocusScreenState
       _isRunning = true;
     });
 
-    _timer = Timer.periodic(
-      const Duration(seconds: 1),
-      (timer) {
-        if (_remainingSeconds <= 1) {
-          timer.cancel();
-
-          if (mounted) {
-            setState(() {
-              _remainingSeconds = 0;
-              _isRunning = false;
-            });
-
-            unawaited(_recordFocusCompletion());
-          }
-
-          return;
-        }
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_remainingSeconds <= 1) {
+        timer.cancel();
 
         if (mounted) {
           setState(() {
-            _remainingSeconds--;
+            _remainingSeconds = 0;
+            _isRunning = false;
           });
+
+          unawaited(_recordFocusCompletion());
         }
-      },
-    );
+
+        return;
+      }
+
+      if (mounted) {
+        setState(() {
+          _remainingSeconds--;
+        });
+      }
+    });
   }
 
   void _pauseTimer() {
@@ -3802,8 +4347,7 @@ class _FocusScreenState
     _timer?.cancel();
 
     setState(() {
-      _remainingSeconds =
-          widget.durationMinutes * 60;
+      _remainingSeconds = widget.durationMinutes * 60;
       _isRunning = false;
     });
   }
@@ -3811,13 +4355,8 @@ class _FocusScreenState
   void _showCompletedMessage() {
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Focus session completed! 🎉',
-        ),
-      ),
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Focus session completed! 🎉')),
     );
   }
 
@@ -3834,18 +4373,18 @@ class _FocusScreenState
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Focus finished, but progress could not be saved.')),
+          const SnackBar(
+            content: Text('Focus finished, but progress could not be saved.'),
+          ),
         );
       }
     }
   }
 
   String _formatTime() {
-    final minutes =
-        _remainingSeconds ~/ 60;
+    final minutes = _remainingSeconds ~/ 60;
 
-    final seconds =
-        _remainingSeconds % 60;
+    final seconds = _remainingSeconds % 60;
 
     return '${minutes.toString().padLeft(2, '0')}:'
         '${seconds.toString().padLeft(2, '0')}';
@@ -3867,9 +4406,25 @@ class _FocusScreenState
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                Text(widget.taskTitle, textAlign: TextAlign.center, style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w800, letterSpacing: -0.3)),
+                Text(
+                  widget.taskTitle,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 23,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
+                  ),
+                ),
                 const SizedBox(height: 6),
-                Text(widget.subject, textAlign: TextAlign.center, style: TextStyle(color: StudyFlowTheme.muted, fontSize: 14, fontWeight: FontWeight.w600)),
+                Text(
+                  widget.subject,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: StudyFlowTheme.muted,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 const SizedBox(height: 28),
                 SizedBox(
                   width: 260,
@@ -3884,15 +4439,30 @@ class _FocusScreenState
                           value: progress,
                           strokeWidth: 10,
                           backgroundColor: const Color(0xFFE7F0E8),
-                          valueColor: const AlwaysStoppedAnimation<Color>(StudyFlowTheme.sage),
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            StudyFlowTheme.sage,
+                          ),
                         ),
                       ),
                       Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(_formatTime(), style: const TextStyle(fontSize: 46, fontWeight: FontWeight.w800, color: StudyFlowTheme.charcoal)),
+                          Text(
+                            _formatTime(),
+                            style: const TextStyle(
+                              fontSize: 46,
+                              fontWeight: FontWeight.w800,
+                              color: StudyFlowTheme.charcoal,
+                            ),
+                          ),
                           const SizedBox(height: 5),
-                          Text(_isRunning ? 'Stay focused' : 'Focus session', style: TextStyle(color: StudyFlowTheme.muted, fontWeight: FontWeight.w600)),
+                          Text(
+                            _isRunning ? 'Stay focused' : 'Focus session',
+                            style: TextStyle(
+                              color: StudyFlowTheme.muted,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -3909,7 +4479,9 @@ class _FocusScreenState
                         style: FilledButton.styleFrom(
                           backgroundColor: StudyFlowTheme.sage,
                           minimumSize: const Size(0, 52),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                         ),
                       ),
                     ),
@@ -3921,19 +4493,27 @@ class _FocusScreenState
                         onPressed: _resetTimer,
                         style: OutlinedButton.styleFrom(
                           padding: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                           side: const BorderSide(color: Color(0x2E5D8E71)),
                         ),
-                        child: const Icon(Icons.restart_alt, color: StudyFlowTheme.sageStrong),
+                        child: const Icon(
+                          Icons.restart_alt,
+                          color: StudyFlowTheme.sageStrong,
+                        ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
                 TextButton.icon(
-                  onPressed: () => Navigator.maybePop(context),
+                  onPressed: () {
+                    _mainNavigationKey.currentState?.goHome();
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
                   icon: const Icon(Icons.arrow_back_rounded, size: 18),
-                  label: const Text('Back to menu'),
+                  label: const Text('Back to home'),
                   style: TextButton.styleFrom(
                     foregroundColor: StudyFlowTheme.sageStrong,
                     minimumSize: const Size(0, 42),
@@ -4061,7 +4641,8 @@ class _NotesScreenState extends State<NotesScreen> {
   }
 
   Future<void> _deleteNote(StudyNote note) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed =
+        await showDialog<bool>(
           context: context,
           builder: (dialogContext) => AlertDialog(
             title: const Text('Delete note?'),
@@ -4145,11 +4726,13 @@ class _NotesScreenState extends State<NotesScreen> {
                 animation: StudyNoteStore.instance,
                 builder: (context, _) {
                   final store = StudyNoteStore.instance;
-                  if (store.isLoading || !store.isLoaded && store.error == null) {
+                  if (store.isLoading ||
+                      !store.isLoaded && store.error == null) {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (store.error != null) {
-                    final userId = Supabase.instance.client.auth.currentUser?.id;
+                    final userId =
+                        Supabase.instance.client.auth.currentUser?.id;
                     return Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -4160,8 +4743,8 @@ class _NotesScreenState extends State<NotesScreen> {
                             onPressed: userId == null
                                 ? null
                                 : () => unawaited(
-                                      store.loadForUser(userId, force: true),
-                                    ),
+                                    store.loadForUser(userId, force: true),
+                                  ),
                             icon: const Icon(Icons.refresh),
                             label: const Text('Retry'),
                           ),
@@ -4176,7 +4759,9 @@ class _NotesScreenState extends State<NotesScreen> {
                     return StudyNotesEmptyState(onCreate: () => _editNote());
                   }
                   if (notes.isEmpty) {
-                    return const Center(child: Text('No notes match your search.'));
+                    return const Center(
+                      child: Text('No notes match your search.'),
+                    );
                   }
 
                   return ListView.builder(
@@ -4200,7 +4785,11 @@ class _NotesScreenState extends State<NotesScreen> {
   }
 }
 
-void _showNotesError(BuildContext context, Object error, StackTrace stackTrace) {
+void _showNotesError(
+  BuildContext context,
+  Object error,
+  StackTrace stackTrace,
+) {
   developer.log(
     'Note operation failed.',
     name: 'StudyFlowNotes',
@@ -4280,20 +4869,45 @@ class _NoteCard extends StatelessWidget {
               color: const Color(0xFFEAF5EE),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(Icons.description_outlined, color: StudyFlowTheme.sageStrong),
+            child: const Icon(
+              Icons.description_outlined,
+              color: StudyFlowTheme.sageStrong,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(note.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                Text(
+                  note.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 if (note.subject?.isNotEmpty == true) ...[
-                  Text(note.subject!, style: const TextStyle(color: StudyFlowTheme.sageStrong, fontSize: 12, fontWeight: FontWeight.w700)),
+                  Text(
+                    note.subject!,
+                    style: const TextStyle(
+                      color: StudyFlowTheme.sageStrong,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   const SizedBox(height: 5),
                 ],
-                Text(note.content, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(color: StudyFlowTheme.muted, fontSize: 13, fontWeight: FontWeight.w500)),
+                Text(
+                  note.content,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: StudyFlowTheme.muted,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ],
             ),
           ),
@@ -4407,9 +5021,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
 
                 if (title.isEmpty || subject.isEmpty || content.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please fill in all fields.'),
-                    ),
+                    const SnackBar(content: Text('Please fill in all fields.')),
                   );
                   return;
                 }
@@ -4441,10 +5053,20 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
     return Scaffold(
       backgroundColor: StudyFlowTheme.backgroundLight,
       appBar: AppBar(
-        title: const Text('Note', style: TextStyle(fontWeight: FontWeight.w700)),
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)),
+        title: const Text(
+          'Note',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
         actions: [
-          IconButton(tooltip: 'Edit note', icon: const Icon(Icons.edit_outlined), onPressed: _showEditDialog),
+          IconButton(
+            tooltip: 'Edit note',
+            icon: const Icon(Icons.edit_outlined),
+            onPressed: _showEditDialog,
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -4455,11 +5077,32 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(_title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.4)),
+              Text(
+                _title,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: -0.4,
+                ),
+              ),
               const SizedBox(height: 8),
-              Text(_subject, style: const TextStyle(color: StudyFlowTheme.sageStrong, fontSize: 14, fontWeight: FontWeight.w700)),
+              Text(
+                _subject,
+                style: const TextStyle(
+                  color: StudyFlowTheme.sageStrong,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
               const SizedBox(height: 24),
-              Text(_content, style: const TextStyle(fontSize: 16, height: 1.6, color: StudyFlowTheme.charcoal)),
+              Text(
+                _content,
+                style: const TextStyle(
+                  fontSize: 16,
+                  height: 1.6,
+                  color: StudyFlowTheme.charcoal,
+                ),
+              ),
             ],
           ),
         ),
@@ -4519,7 +5162,9 @@ class MoreScreen extends StatelessWidget {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Set up RevenueCat on Android or iOS to unlock Pro Analytics.'),
+              content: Text(
+                'Set up RevenueCat on Android or iOS to unlock Pro Analytics.',
+              ),
             ),
           );
         }
@@ -4539,7 +5184,9 @@ class MoreScreen extends StatelessWidget {
     } catch (_) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not verify Pro access. Try again.')),
+          const SnackBar(
+            content: Text('Could not verify Pro access. Try again.'),
+          ),
         );
       }
     }
@@ -4569,20 +5216,60 @@ class MoreScreen extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(20, 28, 20, 30),
         children: [
-          const Text('More', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -0.7)),
+          const Text(
+            'More',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.7,
+            ),
+          ),
           const SizedBox(height: 22),
-          _MoreTile(icon: Icons.workspace_premium_outlined, title: 'StudyFlow Pro', subtitle: 'Unlock detailed study analytics', onTap: () => _openPro(context)),
-          _MoreTile(icon: Icons.flag_outlined, title: 'Goals', subtitle: 'Set and track your daily study goal', onTap: () => _open(context, 'Goals')),
-          _MoreTile(icon: Icons.bar_chart_outlined, title: 'Analytics', subtitle: 'View your weekly study progress', onTap: () => _openAnalytics(context)),
-          _MoreTile(icon: Icons.local_fire_department_outlined, title: 'Study Streak', subtitle: 'Keep your study consistency going', onTap: () => _open(context, 'Study Streak')),
-          _MoreTile(icon: Icons.lightbulb_outline, title: 'Motivation', subtitle: 'Daily quotes and study tips', onTap: () => _open(context, 'Motivation')),
-          _MoreTile(icon: Icons.brightness_6_outlined, title: 'Appearance', subtitle: 'Light or follow your device setting', onTap: () => _showThemeDialog(context)),
+          _MoreTile(
+            icon: Icons.workspace_premium_outlined,
+            title: 'StudyFlow Pro',
+            subtitle: 'Unlock detailed study analytics',
+            onTap: () => _openPro(context),
+          ),
+          _MoreTile(
+            icon: Icons.flag_outlined,
+            title: 'Goals',
+            subtitle: 'Set and track your daily study goal',
+            onTap: () => _open(context, 'Goals'),
+          ),
+          _MoreTile(
+            icon: Icons.bar_chart_outlined,
+            title: 'Analytics',
+            subtitle: 'View your weekly study progress',
+            onTap: () => _openAnalytics(context),
+          ),
+          _MoreTile(
+            icon: Icons.local_fire_department_outlined,
+            title: 'Study Streak',
+            subtitle: 'Keep your study consistency going',
+            onTap: () => _open(context, 'Study Streak'),
+          ),
+          _MoreTile(
+            icon: Icons.lightbulb_outline,
+            title: 'Motivation',
+            subtitle: 'Daily quotes and study tips',
+            onTap: () => _open(context, 'Motivation'),
+          ),
+          _MoreTile(
+            icon: Icons.brightness_6_outlined,
+            title: 'Appearance',
+            subtitle: 'Light or follow your device setting',
+            onTap: () => _showThemeDialog(context),
+          ),
           const SizedBox(height: 4),
           GlassCard(
             radius: 22,
             margin: const EdgeInsets.only(bottom: 12),
             child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 7,
+              ),
               leading: Container(
                 width: 46,
                 height: 46,
@@ -4592,9 +5279,18 @@ class MoreScreen extends StatelessWidget {
                 ),
                 child: const Icon(Icons.logout, color: Colors.redAccent),
               ),
-              title: const Text('Sign Out', style: TextStyle(fontWeight: FontWeight.w800)),
-              subtitle: const Padding(padding: EdgeInsets.only(top: 3), child: Text('Sign out of your StudyFlow account')),
-              trailing: const Icon(Icons.chevron_right, color: StudyFlowTheme.muted),
+              title: const Text(
+                'Sign Out',
+                style: TextStyle(fontWeight: FontWeight.w800),
+              ),
+              subtitle: const Padding(
+                padding: EdgeInsets.only(top: 3),
+                child: Text('Sign out of your StudyFlow account'),
+              ),
+              trailing: const Icon(
+                Icons.chevron_right,
+                color: StudyFlowTheme.muted,
+              ),
               onTap: () async {
                 await _logOutRevenueCat();
                 await Supabase.instance.client.auth.signOut();
@@ -4655,7 +5351,9 @@ class _StudyFlowProScreenState extends State<StudyFlowProScreen> {
       }
 
       final user = Supabase.instance.client.auth.currentUser;
-      if (user == null) throw StateError('Sign in before viewing StudyFlow Pro.');
+      if (user == null) {
+        throw StateError('Sign in before viewing StudyFlow Pro.');
+      }
       await Purchases.logIn(user.id);
 
       final results = await Future.wait([
@@ -4671,8 +5369,12 @@ class _StudyFlowProScreenState extends State<StudyFlowProScreen> {
         _offering = offering;
         _isPro = _hasStudyFlowPro(customerInfo);
         _isLoading = false;
-        if (offering == null || offering.availablePackages.isEmpty) {
-          _error = 'No products are attached to the current RevenueCat offering.';
+        if (offering == null ||
+            !offering.availablePackages.any(
+              (package) => package.packageType == PackageType.lifetime,
+            )) {
+          _error =
+              'No lifetime product is attached to the current RevenueCat offering.';
         }
       });
     } catch (error, stackTrace) {
@@ -4722,7 +5424,11 @@ class _StudyFlowProScreenState extends State<StudyFlowProScreen> {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Purchase was not completed. You were not charged if it was cancelled.')),
+          const SnackBar(
+            content: Text(
+              'Purchase was not completed. You were not charged if it was cancelled.',
+            ),
+          ),
         );
       }
     } finally {
@@ -4753,7 +5459,9 @@ class _StudyFlowProScreenState extends State<StudyFlowProScreen> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not restore purchases. Please try again.')),
+          const SnackBar(
+            content: Text('Could not restore purchases. Please try again.'),
+          ),
         );
       }
     } finally {
@@ -4761,20 +5469,15 @@ class _StudyFlowProScreenState extends State<StudyFlowProScreen> {
     }
   }
 
-  String _packageLabel(Package package) => switch (package.packageType) {
-        PackageType.weekly => 'Weekly',
-        PackageType.monthly => 'Monthly',
-        PackageType.twoMonth => 'Every 2 months',
-        PackageType.threeMonth => 'Quarterly',
-        PackageType.sixMonth => 'Every 6 months',
-        PackageType.annual => 'Yearly',
-        PackageType.lifetime => 'Lifetime',
-        _ => package.storeProduct.title,
-      };
+  String _packageLabel(Package package) => 'Lifetime';
 
   @override
   Widget build(BuildContext context) {
-    final packages = _offering?.availablePackages ?? const <Package>[];
+    final packages =
+        _offering?.availablePackages
+            .where((package) => package.packageType == PackageType.lifetime)
+            .toList(growable: false) ??
+        const <Package>[];
 
     return Scaffold(
       backgroundColor: StudyFlowTheme.backgroundLight,
@@ -4789,7 +5492,11 @@ class _StudyFlowProScreenState extends State<StudyFlowProScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.insights_rounded, size: 32, color: StudyFlowTheme.sageStrong),
+                  const Icon(
+                    Icons.insights_rounded,
+                    size: 32,
+                    color: StudyFlowTheme.sageStrong,
+                  ),
                   const SizedBox(height: 14),
                   const Text(
                     'Make your progress visible.',
@@ -4797,7 +5504,7 @@ class _StudyFlowProScreenState extends State<StudyFlowProScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Unlock detailed study analytics and see how your habits grow over time.',
+                    'Get lifetime access to detailed study analytics with one purchase. StudyFlow has no Pro subscription.',
                     style: TextStyle(color: StudyFlowTheme.muted, height: 1.45),
                   ),
                   const SizedBox(height: 18),
@@ -4818,29 +5525,57 @@ class _StudyFlowProScreenState extends State<StudyFlowProScreen> {
               GlassCard(
                 radius: 20,
                 child: ListTile(
-                  leading: const Icon(Icons.verified_rounded, color: StudyFlowTheme.sageStrong),
-                  title: const Text('StudyFlow Pro is active', style: TextStyle(fontWeight: FontWeight.w800)),
-                  subtitle: const Text('Your premium Analytics entitlement is unlocked.'),
-                  trailing: const Icon(Icons.check_circle, color: StudyFlowTheme.sageStrong),
+                  leading: const Icon(
+                    Icons.verified_rounded,
+                    color: StudyFlowTheme.sageStrong,
+                  ),
+                  title: const Text(
+                    'StudyFlow Pro is active',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: const Text(
+                    'Your premium Analytics entitlement is unlocked.',
+                  ),
+                  trailing: const Icon(
+                    Icons.check_circle,
+                    color: StudyFlowTheme.sageStrong,
+                  ),
                 ),
               )
             else if (packages.isNotEmpty) ...[
-              const Text('Choose a plan', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              const Text(
+                'One-time lifetime purchase',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+              ),
               const SizedBox(height: 10),
               for (final package in packages)
                 GlassCard(
                   radius: 18,
                   margin: const EdgeInsets.only(bottom: 10),
                   child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
-                    title: Text(_packageLabel(package), style: const TextStyle(fontWeight: FontWeight.w800)),
-                    subtitle: Text(package.storeProduct.description.isNotEmpty
-                        ? package.storeProduct.description
-                        : package.storeProduct.identifier),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 7,
+                    ),
+                    title: Text(
+                      _packageLabel(package),
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                    subtitle: Text(
+                      package.storeProduct.description.isNotEmpty
+                          ? package.storeProduct.description
+                          : package.storeProduct.identifier,
+                    ),
                     trailing: _loadingPackageId == package.identifier
-                        ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
                         : FilledButton(
-                            onPressed: _loadingPackageId == null ? () => _purchase(package) : null,
+                            onPressed: _loadingPackageId == null
+                                ? () => _purchase(package)
+                                : null,
                             child: Text(package.storeProduct.priceString),
                           ),
                   ),
@@ -4853,7 +5588,10 @@ class _StudyFlowProScreenState extends State<StudyFlowProScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(_error!, style: const TextStyle(fontWeight: FontWeight.w700)),
+                      Text(
+                        _error!,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         onPressed: _loadProProducts,
@@ -4871,15 +5609,22 @@ class _StudyFlowProScreenState extends State<StudyFlowProScreen> {
                 icon: const Icon(Icons.bar_chart_rounded),
                 label: const Text('Open Analytics'),
               ),
-            TextButton.icon(
-              onPressed: _isRestoring ? null : _restorePurchases,
-              icon: _isRestoring
-                  ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Icon(Icons.restore_rounded),
-              label: const Text('Restore purchases'),
-            ),
+            if (!kIsWeb)
+              TextButton.icon(
+                onPressed: _isRestoring ? null : _restorePurchases,
+                icon: _isRestoring
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.restore_rounded),
+                label: const Text('Restore purchases'),
+              ),
             Text(
-              'Payment and subscription terms are shown by your app store before purchase.',
+              kIsWeb
+                  ? 'The lifetime purchase and restore options are available in the Android and iOS apps.'
+                  : 'One-time payment. No subscription or recurring charge. Your store confirms the final price before purchase.',
               textAlign: TextAlign.center,
               style: TextStyle(color: StudyFlowTheme.muted, fontSize: 12),
             ),
@@ -4897,15 +5642,24 @@ class _ProBenefit extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Row(
-          children: [
-            const Icon(Icons.check_circle_outline_rounded, size: 18, color: StudyFlowTheme.sageStrong),
-            const SizedBox(width: 9),
-            Expanded(child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600))),
-          ],
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Row(
+      children: [
+        const Icon(
+          Icons.check_circle_outline_rounded,
+          size: 18,
+          color: StudyFlowTheme.sageStrong,
         ),
-      );
+        const SizedBox(width: 9),
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _MoreTile extends StatelessWidget {
@@ -4914,7 +5668,12 @@ class _MoreTile extends StatelessWidget {
   final String subtitle;
   final VoidCallback onTap;
 
-  const _MoreTile({required this.icon, required this.title, required this.subtitle, required this.onTap});
+  const _MoreTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -4934,7 +5693,16 @@ class _MoreTile extends StatelessWidget {
           child: Icon(icon, color: StudyFlowTheme.sageStrong),
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
-        subtitle: Padding(padding: const EdgeInsets.only(top: 3), child: Text(subtitle, style: TextStyle(color: StudyFlowTheme.muted, fontWeight: FontWeight.w500))),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 3),
+          child: Text(
+            subtitle,
+            style: TextStyle(
+              color: StudyFlowTheme.muted,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
         trailing: const Icon(Icons.chevron_right, color: StudyFlowTheme.muted),
       ),
     );
@@ -5023,11 +5791,27 @@ class GoalsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.flag_rounded, size: 34, color: StudyFlowTheme.sageStrong),
+                    const Icon(
+                      Icons.flag_rounded,
+                      size: 34,
+                      color: StudyFlowTheme.sageStrong,
+                    ),
                     const SizedBox(height: 14),
-                    const Text('Today’s study goal', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+                    const Text(
+                      'Today’s study goal',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    Text('${_formatMinutes(data.completedMinutes)} of ${_formatMinutes(data.goalMinutes)} completed', style: TextStyle(color: StudyFlowTheme.muted, fontWeight: FontWeight.w600)),
+                    Text(
+                      '${_formatMinutes(data.completedMinutes)} of ${_formatMinutes(data.goalMinutes)} completed',
+                      style: TextStyle(
+                        color: StudyFlowTheme.muted,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
@@ -5035,11 +5819,16 @@ class GoalsScreen extends StatelessWidget {
                         value: progress,
                         minHeight: 12,
                         backgroundColor: Colors.white.withValues(alpha: 0.55),
-                        valueColor: const AlwaysStoppedAnimation<Color>(StudyFlowTheme.sage),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          StudyFlowTheme.sage,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Text('${(progress * 100).round()}% complete', style: const TextStyle(fontWeight: FontWeight.w800)),
+                    Text(
+                      '${(progress * 100).round()}% complete',
+                      style: const TextStyle(fontWeight: FontWeight.w800),
+                    ),
                   ],
                 ),
               ),
@@ -5047,10 +5836,25 @@ class GoalsScreen extends StatelessWidget {
               GlassCard(
                 radius: 22,
                 child: ListTile(
-                  leading: const Icon(Icons.timer_outlined, color: StudyFlowTheme.sageStrong),
-                  title: const Text('Daily target', style: TextStyle(fontWeight: FontWeight.w800)),
-                  subtitle: Text(_formatMinutes(data.goalMinutes), style: TextStyle(color: StudyFlowTheme.muted, fontWeight: FontWeight.w600)),
-                  trailing: const Icon(Icons.edit_outlined, color: StudyFlowTheme.muted),
+                  leading: const Icon(
+                    Icons.timer_outlined,
+                    color: StudyFlowTheme.sageStrong,
+                  ),
+                  title: const Text(
+                    'Daily target',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: Text(
+                    _formatMinutes(data.goalMinutes),
+                    style: TextStyle(
+                      color: StudyFlowTheme.muted,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  trailing: const Icon(
+                    Icons.edit_outlined,
+                    color: StudyFlowTheme.muted,
+                  ),
                   onTap: () => _changeGoal(context),
                 ),
               ),
@@ -5058,15 +5862,37 @@ class GoalsScreen extends StatelessWidget {
               GlassCard(
                 radius: 22,
                 child: ListTile(
-                  leading: const Icon(Icons.task_alt, color: StudyFlowTheme.sageStrong),
-                  title: const Text('Tasks completed', style: TextStyle(fontWeight: FontWeight.w800)),
-                  subtitle: Text('${data.completedTasks} tasks completed', style: TextStyle(color: StudyFlowTheme.muted, fontWeight: FontWeight.w600)),
+                  leading: const Icon(
+                    Icons.task_alt,
+                    color: StudyFlowTheme.sageStrong,
+                  ),
+                  title: const Text(
+                    'Tasks completed',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: Text(
+                    '${data.completedTasks} tasks completed',
+                    style: TextStyle(
+                      color: StudyFlowTheme.muted,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
-              const Text('How goals work', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+              const Text(
+                'How goals work',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+              ),
               const SizedBox(height: 8),
-              Text('Complete a planned task or finish a Focus session. Your study progress updates automatically.', style: TextStyle(color: StudyFlowTheme.muted, height: 1.5, fontWeight: FontWeight.w600)),
+              Text(
+                'Complete a planned task or finish a Focus session. Your study progress updates automatically.',
+                style: TextStyle(
+                  color: StudyFlowTheme.muted,
+                  height: 1.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           );
         },
@@ -5105,13 +5931,32 @@ class AnalyticsScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Expanded(child: StatTile(icon: Icons.timer_outlined, value: _format(data.completedMinutes), label: 'Today', accent: StudyFlowTheme.sageStrong)),
+                  Expanded(
+                    child: StatTile(
+                      icon: Icons.timer_outlined,
+                      value: _format(data.completedMinutes),
+                      label: 'Today',
+                      accent: StudyFlowTheme.sageStrong,
+                    ),
+                  ),
                   const SizedBox(width: 12),
-                  Expanded(child: StatTile(icon: Icons.task_alt, value: '${data.completedTasks}', label: 'Tasks done', accent: const Color(0xFF4F8D60))),
+                  Expanded(
+                    child: StatTile(
+                      icon: Icons.task_alt,
+                      value: '${data.completedTasks}',
+                      label: 'Tasks done',
+                      accent: const Color(0xFF4F8D60),
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
-              StatTile(icon: Icons.calendar_month_outlined, value: _format(total), label: 'Last 7 days', accent: const Color(0xFFA3C9B0)),
+              StatTile(
+                icon: Icons.calendar_month_outlined,
+                value: _format(total),
+                label: 'Last 7 days',
+                accent: const Color(0xFFA3C9B0),
+              ),
               const SizedBox(height: 20),
               GlassContainer(
                 radius: 28,
@@ -5119,11 +5964,27 @@ class AnalyticsScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Weekly progress', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                    const Text(
+                      'Weekly progress',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    Text('Study time over the last 7 days', style: TextStyle(color: StudyFlowTheme.muted, fontWeight: FontWeight.w600)),
+                    Text(
+                      'Study time over the last 7 days',
+                      style: TextStyle(
+                        color: StudyFlowTheme.muted,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 18),
-                    SizedBox(height: 220, width: double.infinity, child: _WeeklyLineChart(values: data.weeklyMinutes)),
+                    SizedBox(
+                      height: 220,
+                      width: double.infinity,
+                      child: _WeeklyLineChart(values: data.weeklyMinutes),
+                    ),
                   ],
                 ),
               ),
@@ -5133,12 +5994,21 @@ class AnalyticsScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(18),
                 child: Row(
                   children: [
-                    const Icon(Icons.insights_outlined, color: StudyFlowTheme.sageStrong, size: 30),
+                    const Icon(
+                      Icons.insights_outlined,
+                      color: StudyFlowTheme.sageStrong,
+                      size: 30,
+                    ),
                     const SizedBox(width: 14),
                     Expanded(
                       child: Text(
-                        data.completedMinutes >= data.goalMinutes ? 'Great work! You reached your daily goal. 🎉' : 'Keep going — you are building your study habit.',
-                        style: const TextStyle(fontWeight: FontWeight.w700, height: 1.4),
+                        data.completedMinutes >= data.goalMinutes
+                            ? 'Great work! You reached your daily goal. 🎉'
+                            : 'Keep going — you are building your study habit.',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          height: 1.4,
+                        ),
                       ),
                     ),
                   ],
@@ -5201,20 +6071,15 @@ class _WeeklyChartPainter extends CustomPainter {
 
     for (int i = 0; i < 4; i++) {
       final y = chartTop + chartHeight * i / 3;
-      canvas.drawLine(
-        Offset(chartLeft, y),
-        Offset(chartRight, y),
-        gridPaint,
-      );
+      canvas.drawLine(Offset(chartLeft, y), Offset(chartRight, y), gridPaint);
     }
 
     final path = Path();
 
     for (int i = 0; i < values.length; i++) {
-      final x = chartLeft +
-          (chartWidth * i / (values.length - 1).clamp(1, 100));
-      final y = chartBottom -
-          (values[i] / maxValue) * chartHeight;
+      final x =
+          chartLeft + (chartWidth * i / (values.length - 1).clamp(1, 100));
+      final y = chartBottom - (values[i] / maxValue) * chartHeight;
 
       if (i == 0) {
         path.moveTo(x, y);
@@ -5226,31 +6091,24 @@ class _WeeklyChartPainter extends CustomPainter {
     canvas.drawPath(path, linePaint);
 
     for (int i = 0; i < values.length; i++) {
-      final x = chartLeft +
-          (chartWidth * i / (values.length - 1).clamp(1, 100));
-      final y = chartBottom -
-          (values[i] / maxValue) * chartHeight;
+      final x =
+          chartLeft + (chartWidth * i / (values.length - 1).clamp(1, 100));
+      final y = chartBottom - (values[i] / maxValue) * chartHeight;
 
       canvas.drawCircle(Offset(x, y), 5, dotPaint);
     }
 
     const labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-    final textStyle = const TextStyle(
-      color: Color(0xFF6F756F),
-      fontSize: 11,
-    );
+    final textStyle = const TextStyle(color: Color(0xFF6F756F), fontSize: 11);
 
     for (int i = 0; i < labels.length; i++) {
-      final x = chartLeft +
-          (chartWidth * i / (labels.length - 1).clamp(1, 100));
+      final x =
+          chartLeft + (chartWidth * i / (labels.length - 1).clamp(1, 100));
       final tp = TextPainter(
         text: TextSpan(text: labels[i], style: textStyle),
         textDirection: TextDirection.ltr,
       )..layout();
-      tp.paint(
-        canvas,
-        Offset(x - tp.width / 2, chartBottom + 8),
-      );
+      tp.paint(canvas, Offset(x - tp.width / 2, chartBottom + 8));
     }
   }
 
@@ -5282,44 +6140,90 @@ class StudyStreakScreen extends StatelessWidget {
             children: [
               GlassContainer(
                 radius: 28,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 28,
+                ),
                 child: Column(
                   children: [
                     const Text('🔥', style: TextStyle(fontSize: 64)),
                     const SizedBox(height: 8),
-                    Text('${data.currentStreak} Day Streak', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800, letterSpacing: -0.6)),
+                    Text(
+                      '${data.currentStreak} Day Streak',
+                      style: const TextStyle(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.6,
+                      ),
+                    ),
                     const SizedBox(height: 6),
-                    Text('Keep studying every day to maintain your streak.', textAlign: TextAlign.center, style: TextStyle(color: StudyFlowTheme.muted, height: 1.4, fontWeight: FontWeight.w600)),
+                    Text(
+                      'Keep studying every day to maintain your streak.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: StudyFlowTheme.muted,
+                        height: 1.4,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Expanded(child: _StreakStat(value: '${data.currentStreak}', label: 'Current streak')),
+                  Expanded(
+                    child: _StreakStat(
+                      value: '${data.currentStreak}',
+                      label: 'Current streak',
+                    ),
+                  ),
                   const SizedBox(width: 12),
-                  Expanded(child: _StreakStat(value: '${data.longestStreak}', label: 'Longest streak')),
+                  Expanded(
+                    child: _StreakStat(
+                      value: '${data.longestStreak}',
+                      label: 'Longest streak',
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
-              const Text('This week', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+              const Text(
+                'This week',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+              ),
               const SizedBox(height: 12),
               GlassContainer(
                 radius: 24,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 18,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: List.generate(7, (index) {
                     final today = DateTime.now();
-                    final monday = today.subtract(Duration(days: today.weekday - 1));
+                    final monday = today.subtract(
+                      Duration(days: today.weekday - 1),
+                    );
                     final date = monday.add(Duration(days: index));
                     const labels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-                    return _StreakDay(day: labels[index], active: data.hasActivityOn(date));
+                    return _StreakDay(
+                      day: labels[index],
+                      active: data.hasActivityOn(date),
+                    );
                   }),
                 ),
               ),
               const SizedBox(height: 14),
-              Text('Complete at least one task or Focus session each day to keep building your streak.', style: TextStyle(color: StudyFlowTheme.muted, height: 1.5, fontWeight: FontWeight.w600)),
+              Text(
+                'Complete at least one task or Focus session each day to keep building your streak.',
+                style: TextStyle(
+                  color: StudyFlowTheme.muted,
+                  height: 1.5,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ],
           );
         },
@@ -5332,10 +6236,7 @@ class _StreakStat extends StatelessWidget {
   final String value;
   final String label;
 
-  const _StreakStat({
-    required this.value,
-    required this.label,
-  });
+  const _StreakStat({required this.value, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -5345,9 +6246,23 @@ class _StreakStat extends StatelessWidget {
         padding: const EdgeInsets.all(18),
         child: Column(
           children: [
-            Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w800, letterSpacing: -0.5)),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(label, textAlign: TextAlign.center, style: TextStyle(color: StudyFlowTheme.muted, fontWeight: FontWeight.w600)),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: StudyFlowTheme.muted,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
       ),
@@ -5359,10 +6274,7 @@ class _StreakDay extends StatelessWidget {
   final String day;
   final bool active;
 
-  const _StreakDay({
-    required this.day,
-    required this.active,
-  });
+  const _StreakDay({required this.day, required this.active});
 
   @override
   Widget build(BuildContext context) {
@@ -5403,7 +6315,8 @@ class _MotivationScreenState extends State<MotivationScreen> {
   final List<Map<String, String>> _quotes = const [
     {
       'quote': 'Small progress is still progress.',
-      'tip': 'Focus on one task at a time instead of trying to finish everything together.',
+      'tip':
+          'Focus on one task at a time instead of trying to finish everything together.',
     },
     {
       'quote': 'Consistency beats intensity.',
@@ -5446,11 +6359,33 @@ class _MotivationScreenState extends State<MotivationScreen> {
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                const Icon(Icons.format_quote_rounded, size: 42, color: StudyFlowTheme.sageStrong),
+                const Icon(
+                  Icons.format_quote_rounded,
+                  size: 42,
+                  color: StudyFlowTheme.sageStrong,
+                ),
                 const SizedBox(height: 18),
-                Text('“${item['quote']}”', textAlign: TextAlign.center, style: const TextStyle(fontSize: 23, fontWeight: FontWeight.w800, height: 1.35, letterSpacing: -0.2)),
+                Text(
+                  '“${item['quote']}”',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 23,
+                    fontWeight: FontWeight.w800,
+                    height: 1.35,
+                    letterSpacing: -0.2,
+                  ),
+                ),
                 const SizedBox(height: 22),
-                Text(item['tip']!, textAlign: TextAlign.center, style: TextStyle(color: StudyFlowTheme.muted, fontSize: 15, height: 1.45, fontWeight: FontWeight.w600)),
+                Text(
+                  item['tip']!,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: StudyFlowTheme.muted,
+                    fontSize: 15,
+                    height: 1.45,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
@@ -5462,11 +6397,16 @@ class _MotivationScreenState extends State<MotivationScreen> {
             style: FilledButton.styleFrom(
               backgroundColor: StudyFlowTheme.sage,
               padding: const EdgeInsets.symmetric(vertical: 15),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18),
+              ),
             ),
           ),
           const SizedBox(height: 22),
-          const Text('Today’s reminder', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+          const Text(
+            'Today’s reminder',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+          ),
           const SizedBox(height: 10),
           GlassCard(
             radius: 22,
@@ -5475,9 +6415,20 @@ class _MotivationScreenState extends State<MotivationScreen> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.self_improvement_outlined, color: StudyFlowTheme.sageStrong),
+                  Icon(
+                    Icons.self_improvement_outlined,
+                    color: StudyFlowTheme.sageStrong,
+                  ),
                   SizedBox(width: 12),
-                  Expanded(child: Text('Put your phone away, open your current task, and give it your full attention. 🌱', style: TextStyle(height: 1.45, fontWeight: FontWeight.w600))),
+                  Expanded(
+                    child: Text(
+                      'Put your phone away, open your current task, and give it your full attention. 🌱',
+                      style: TextStyle(
+                        height: 1.45,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -5490,4 +6441,3 @@ class _MotivationScreenState extends State<MotivationScreen> {
 
 // SHARED WIDGETS
 // ─────────────────────────────────────────────
-

@@ -44,7 +44,7 @@ Advanced Analytics, Detailed Study History, Advanced Focus Sessions, Unlimited G
 1. User signs in with Supabase Auth using an email OTP.
 2. The Supabase user UUID is used as the RevenueCat App User ID.
 3. A non-Pro user opens Analytics and sees the RevenueCat paywall.
-4. RevenueCat presents the `default` offering with `monthly`, `yearly`, and `lifetime` products.
+4. RevenueCat presents the `default` offering's lifetime product as a one-time purchase; there is no subscription or recurring charge.
 5. A successful purchase activates `studyflow_pro`.
 6. The app checks CustomerInfo and unlocks Analytics.
 7. The user can restore purchases from Profile.
@@ -65,7 +65,7 @@ Fresh launch -> Supabase session restore or email OTP sign-in -> load owner-scop
 - 0:25-0:45: Add a planner task and start Focus.
 - 0:45-1:00: Add a note and set a goal.
 - 1:00-1:15: Open Analytics to show the Pro paywall.
-- 1:15-1:40: Complete a RevenueCat test purchase or free-trial/promo path.
+- 1:15-1:40: Complete a RevenueCat sandbox lifetime purchase.
 - 1:40-1:55: Reopen Analytics and show weekly progress and entitlement access.
 - 1:55-2:00: End on the StudyFlow value proposition.
 
@@ -86,6 +86,6 @@ Fresh launch -> Supabase session restore or email OTP sign-in -> load owner-scop
 - 1024x1024 app icon.
 - At least one 1179x2556 screenshot without a device frame.
 - Product pitch and feature list.
-- RevenueCat purchase/trial/promo demonstration.
+- RevenueCat lifetime purchase and restore demonstration.
 - Production build link or AAB evidence.
 - Confirmed reviewer account or app-access instructions.
