@@ -1253,14 +1253,15 @@ class _LoginScreenState extends State<LoginScreen> {
     } on AuthException catch (e) {
       _showMessage(_supabaseAuthMessage(e));
     } catch (e, stackTrace) {
-      developer.log(
-        'Unexpected error during sign-in.',
-        name: 'StudyFlowAuth',
-        error: e,
-        stackTrace: stackTrace,
-      );
-      _showMessage('Could not sign in. Please check your connection and try again.');
-    } finally {
+  developer.log(
+    'Unexpected error during account creation.',
+    name: 'StudyFlowAuth',
+    error: e,
+    stackTrace: stackTrace,
+  );
+
+  _showMessage('Account creation error: $e');
+} finally {
       if (mounted) {
         setState(() => _loading = false);
       }
@@ -3721,7 +3722,7 @@ class FocusScreen extends StatefulWidget {
     super.key,
     this.taskTitle = 'Personal study',
     this.subject = 'Study session',
-    this.durationMinutes = 25,
+    this.durationMinutes = 45,
   });
 
   @override
@@ -3927,6 +3928,16 @@ class _FocusScreenState
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 12),
+                TextButton.icon(
+                  onPressed: () => Navigator.maybePop(context),
+                  icon: const Icon(Icons.arrow_back_rounded, size: 18),
+                  label: const Text('Back to menu'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: StudyFlowTheme.sageStrong,
+                    minimumSize: const Size(0, 42),
+                  ),
                 ),
               ],
             ),
