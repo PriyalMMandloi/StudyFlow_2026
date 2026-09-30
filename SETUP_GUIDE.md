@@ -5,7 +5,6 @@
 - Flutter stable with Dart `^3.10.7`.
 - A Supabase project with email OTP enabled.
 - Android Studio/Android SDK and JDK 17 for Android builds. iOS builds require macOS and Xcode.
-- A RevenueCat project and public platform SDK key to exercise purchase flows.
 
 ## Supabase configuration
 
@@ -44,20 +43,14 @@ Run on Android after installing/configuring its SDK and connecting a device or e
 ```powershell
 flutter doctor --android-licenses
 flutter devices
-flutter run -d <device-id> --dart-define=REVENUECAT_ANDROID_API_KEY=<public-android-sdk-key>
+flutter run -d <device-id>
 ```
 
 iOS must be built on macOS with Xcode:
 
 ```sh
-flutter run --dart-define=REVENUECAT_IOS_API_KEY=<public-ios-sdk-key>
+flutter run
 ```
-
-## RevenueCat
-
-Supply only the public platform SDK key with `--dart-define`; no key is hard-coded. In RevenueCat, create a non-consumable lifetime product for each supported store, attach it to the `lifetime` package in the `default` offering, and grant it the `studyflow_pro` entitlement. Do not attach subscription packages: the app intentionally displays and purchases only `PackageType.lifetime`. The app synchronizes the Supabase Auth user UUID as RevenueCat's App User ID.
-
-In the app, open **Profile > StudyFlow Pro** to view the localized lifetime price and make a one-time purchase; there is no subscription or recurring charge. A successful purchase unlocks premium Analytics only when RevenueCat reports the active `studyflow_pro` entitlement. Planner, notes, focus sessions, goals, and streaks remain available without Pro. Profile and the Pro screen both provide purchase restoration. If no product appears, verify the platform SDK key, store connection, non-consumable product status, `default` offering's `lifetime` package, and entitlement attachment in RevenueCat. Purchase, clean-device restore, and entitlement behavior still require sandbox testing on a real Android or iOS store build before claiming billing is live.
 
 ## Data and security
 
@@ -65,7 +58,7 @@ RLS policies ensure authenticated users can access only rows whose `user_id` (or
 
 The migration creates the private bucket automatically. In the Supabase Dashboard, open SQL Editor, run `supabase/migrations/20260927020000_user_notes_and_profile_photos.sql`, and verify the `profile-photos` bucket remains private. The SQL migration has not been executed against your live project.
 
-This codebase no longer initializes or calls Firebase. The local Firebase configuration and Supabase-to-Firebase bridge were removed; no remote Firebase project/resource is modified by these local changes.
+This codebase uses Supabase and does not initialize or call Firebase.
 
 ## Release setup
 

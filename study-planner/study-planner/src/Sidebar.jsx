@@ -12,7 +12,6 @@ const NAV = [
   { id: 'streak', label: 'Streak Tracker', icon: '🔥', section: 'insights' },
   { id: 'focus', label: 'Focus Mode', icon: '🎧', section: 'tools' },
   { id: 'motivation', label: 'Motivation', icon: '✨', section: 'tools' },
-  { id: 'pro', label: 'StudyFlow Pro', icon: '✦', section: 'more' },
 ]
 
 export default function Sidebar({ active, onNav, open, user }) {
@@ -41,7 +40,6 @@ export default function Sidebar({ active, onNav, open, user }) {
     { key: 'main', label: 'Study' },
     { key: 'insights', label: 'Insights' },
     { key: 'tools', label: 'Tools' },
-    { key: 'more', label: 'More' },
     { key: 'user', label: 'User' },
   ]
 

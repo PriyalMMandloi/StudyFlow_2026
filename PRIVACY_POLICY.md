@@ -2,7 +2,7 @@
 
 **Effective date:** 2026-09-27
 
-StudyFlow helps users plan and complete study sessions. This draft describes the app's current Supabase and RevenueCat integrations and must be reviewed by the publisher before publication.
+StudyFlow helps users plan and complete study sessions. This draft describes the app's current Supabase integration and must be reviewed by the publisher before publication.
 
 ## Account information
 
@@ -14,19 +14,15 @@ StudyFlow stores user-created chapters, topics/tasks, and notes in PostgreSQL ta
 
 When a user selects a profile photo, the image is uploaded to the user's private folder in Supabase Storage. The app stores the object path in the profile row and obtains temporary signed URLs to display it. Users can replace or remove their photo from the Profile screen.
 
-## Purchases
-
-StudyFlow uses RevenueCat for in-app purchases and entitlement state. The authenticated Supabase account UUID is used as the RevenueCat App User ID. RevenueCat and the app stores process purchase and transaction information under their own policies. The app uses public RevenueCat SDK keys; no RevenueCat secret key is included in the client.
-
 ## Analytics and advertising
 
 The current app does not initialize an advertising SDK or a separate analytics tracking SDK. The Analytics screen displays study progress derived from the user's saved study data; it is an app feature, not an external tracking service.
 
 ## Sharing, retention, and security
 
-Supabase receives account and study data needed to provide authentication, profiles, and synchronization. RevenueCat and app stores receive information needed for purchases and entitlements. Data retention, account deletion, and provider processing are governed by the configured provider projects and their policies. The app currently has no in-app account deletion workflow; this must be addressed before publication.
+Supabase receives account and study data needed to provide authentication, profiles, and synchronization. Data retention, account deletion, and provider processing are governed by the configured Supabase project and its policies. The app currently has no in-app account deletion workflow; this must be addressed before publication.
 
-Use a secure email account and keep access to it private. The app communicates with Supabase and RevenueCat through their SDKs. No online service can guarantee absolute security.
+Use a secure email account and keep access to it private. The app communicates with Supabase through its SDK. No online service can guarantee absolute security.
 
 ## Publisher details
 

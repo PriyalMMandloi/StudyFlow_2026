@@ -3,19 +3,15 @@ import 'dart:developer' as developer;
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, kIsWeb, TargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'study_note.dart';
 import 'study_note_store.dart';
 import 'study_plan.dart';
 
-Future<void>? _revenueCatReady;
 const _userDataLoadTimeout = Duration(seconds: 20);
 const _profilePhotosBucket = 'profile-photos';
 const _profilePhotoUrlLifetimeSeconds = 604800;
@@ -78,61 +74,8 @@ Future<void> main() async {
     publishableKey: dotenv.get('SUPABASE_ANON_KEY', fallback: ''),
   );
 
-  const androidRevenueCatApiKey = String.fromEnvironment(
-    'REVENUECAT_ANDROID_API_KEY',
-  );
-  const iosRevenueCatApiKey = String.fromEnvironment('REVENUECAT_IOS_API_KEY');
-  final revenueCatApiKey = switch (defaultTargetPlatform) {
-    TargetPlatform.android => androidRevenueCatApiKey,
-    TargetPlatform.iOS => iosRevenueCatApiKey,
-    _ => '',
-  };
-
-  _revenueCatReady = _configureRevenueCat(revenueCatApiKey);
-  unawaited(_revenueCatReady!);
   runApp(const StudyFlowApp());
 }
-
-Future<void> _configureRevenueCat(String apiKey) async {
-  try {
-    if (apiKey.isEmpty) return;
-
-    if (!await Purchases.isConfigured) {
-      await Purchases.configure(PurchasesConfiguration(apiKey));
-    }
-  } catch (_) {}
-}
-
-Future<void> _syncRevenueCatUser(User? user) async {
-  try {
-    final ready = _revenueCatReady;
-    if (ready == null) return;
-    await ready;
-    if (!await Purchases.isConfigured) return;
-
-    if (user == null) {
-      await Purchases.logOut();
-    } else {
-      await Purchases.logIn(user.id);
-    }
-  } catch (_) {}
-}
-
-Future<void> _logOutRevenueCat() async {
-  try {
-    final ready = _revenueCatReady;
-    if (ready == null) return;
-    await ready;
-    if (!await Purchases.isConfigured) return;
-
-    await Purchases.logOut();
-  } catch (_) {}
-}
-
-const _studyFlowProEntitlement = 'studyflow_pro';
-
-bool _hasStudyFlowPro(CustomerInfo customerInfo) =>
-    customerInfo.entitlements.active.containsKey(_studyFlowProEntitlement);
 
 class MyApp extends StudyFlowApp {
   const MyApp({super.key});
@@ -1208,7 +1151,6 @@ class _AuthGateState extends State<AuthGate> {
   void initState() {
     super.initState();
     final auth = Supabase.instance.client.auth;
-    unawaited(_syncRevenueCatUser(auth.currentUser));
     _authSubscription = auth.onAuthStateChange.listen((state) {
       final user = state.session?.user;
       final previousUserId = StudyFlowData.instance._loadedUserId;
@@ -1220,8 +1162,6 @@ class _AuthGateState extends State<AuthGate> {
       if (previousUserId != null && previousUserId != user.id) {
         StudyFlowData.instance.clearForSignedOut();
       }
-
-      unawaited(_syncRevenueCatUser(user));
     });
   }
 
@@ -2188,26 +2128,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ],
                                 ),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'StudyFlow Pro is coming soon!',
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                  width: 54,
-                                  height: 54,
+                              IconButton(
+                                onPressed: _openProfile,
+                                tooltip: 'Profile',
+                                icon: Container(
+                                  width: 48,
+                                  height: 48,
                                   decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      colors: [
-                                        Color(0xFFE6E0FF),
-                                        Color(0xFFCFC7FF),
-                                      ],
-                                    ),
+                                    color: const Color(0xFFE6E0FF),
                                     shape: BoxShape.circle,
                                     border: Border.all(
                                       color: Colors.white.withValues(
@@ -2215,20 +2143,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       ),
                                       width: 3,
                                     ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.08,
-                                        ),
-                                        blurRadius: 18,
-                                        offset: const Offset(0, 10),
-                                      ),
-                                    ],
                                   ),
                                   child: const Icon(
-                                    Icons.workspace_premium_rounded,
+                                    Icons.person_outline_rounded,
                                     color: StudyFlowTheme.sageStrong,
-                                    size: 25,
+                                    size: 24,
                                   ),
                                 ),
                               ),
@@ -3372,7 +3291,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  bool _isRestoring = false;
   bool _isUpdatingPhoto = false;
 
   Future<void> _pickProfilePhoto() async {
@@ -3480,49 +3398,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
     } finally {
       if (mounted) setState(() => _isUpdatingPhoto = false);
-    }
-  }
-
-  Future<void> _restorePurchases() async {
-    final user = Supabase.instance.client.auth.currentUser;
-    if (user == null || _isRestoring) return;
-
-    setState(() {
-      _isRestoring = true;
-    });
-
-    try {
-      await Purchases.logIn(user.id);
-      final customerInfo = await Purchases.restorePurchases();
-      final restored = customerInfo.entitlements.active.containsKey(
-        'studyflow_pro',
-      );
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              restored
-                  ? 'StudyFlow Pro restored successfully.'
-                  : 'No active StudyFlow Pro purchase was found for this account.',
-            ),
-          ),
-        );
-      }
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not restore purchases. Please try again.'),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isRestoring = false;
-        });
-      }
     }
   }
 
@@ -3836,104 +3711,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               const SizedBox(height: 20),
 
-              GlassCard(
-                radius: 20,
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  leading: Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEAF5EE),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Icon(
-                      Icons.workspace_premium_outlined,
-                      color: StudyFlowTheme.sageStrong,
-                    ),
-                  ),
-                  title: const Text(
-                    'StudyFlow Pro',
-                    style: TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                  subtitle: const Padding(
-                    padding: EdgeInsets.only(top: 4),
-                    child: Text(
-                      'Coming soon!',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  trailing: const Icon(
-                    Icons.chevron_right,
-                    color: StudyFlowTheme.muted,
-                  ),
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('StudyFlow Pro is coming soon!'),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              GlassCard(
-                radius: 20,
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  leading: Container(
-                    width: 46,
-                    height: 46,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFEAF5EE),
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: const Icon(
-                      Icons.restore_outlined,
-                      color: StudyFlowTheme.sageStrong,
-                    ),
-                  ),
-                  title: const Text(
-                    'Restore purchases',
-                    style: TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                  subtitle: const Padding(
-                    padding: EdgeInsets.only(top: 4),
-                    child: Text(
-                      'Restore Pro access on this account',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  trailing: _isRestoring
-                      ? const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(
-                          Icons.chevron_right,
-                          color: StudyFlowTheme.muted,
-                        ),
-                  onTap: _isRestoring ? null : _restorePurchases,
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
               SizedBox(
                 width: double.infinity,
                 height: 54,
                 child: OutlinedButton.icon(
                   onPressed: () async {
-                    await _logOutRevenueCat();
                     await Supabase.instance.client.auth.signOut();
 
                     if (context.mounted) {
@@ -5201,48 +4983,6 @@ class MoreScreen extends StatelessWidget {
     }
   }
 
-  Future<void> _openAnalytics(BuildContext context) async {
-    try {
-      final ready = _revenueCatReady;
-      if (ready != null) await ready;
-      if (!await Purchases.isConfigured) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Set up RevenueCat on Android or iOS to unlock Pro Analytics.',
-              ),
-            ),
-          );
-        }
-        return;
-      }
-
-      final customerInfo = await Purchases.getCustomerInfo();
-      if (!context.mounted) return;
-
-      if (_hasStudyFlowPro(customerInfo)) {
-        _open(context, 'Analytics');
-        return;
-      }
-
-      final unlocked = await _presentStudyFlowPro(context);
-      if (unlocked && context.mounted) _open(context, 'Analytics');
-    } catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not verify Pro access. Try again.'),
-          ),
-        );
-      }
-    }
-  }
-
-  Future<void> _openPro(BuildContext context) async {
-    await _presentStudyFlowPro(context);
-  }
-
   void _open(BuildContext context, String title) {
     final pages = <String, Widget>{
       'Goals': const GoalsScreen(),
@@ -5273,12 +5013,6 @@ class MoreScreen extends StatelessWidget {
           ),
           const SizedBox(height: 22),
           _MoreTile(
-            icon: Icons.workspace_premium_outlined,
-            title: 'StudyFlow Pro',
-            subtitle: 'Unlock detailed study analytics',
-            onTap: () => _openPro(context),
-          ),
-          _MoreTile(
             icon: Icons.flag_outlined,
             title: 'Goals',
             subtitle: 'Set and track your daily study goal',
@@ -5288,7 +5022,7 @@ class MoreScreen extends StatelessWidget {
             icon: Icons.bar_chart_outlined,
             title: 'Analytics',
             subtitle: 'View your weekly study progress',
-            onTap: () => _openAnalytics(context),
+            onTap: () => _open(context, 'Analytics'),
           ),
           _MoreTile(
             icon: Icons.local_fire_department_outlined,
@@ -5339,7 +5073,6 @@ class MoreScreen extends StatelessWidget {
                 color: StudyFlowTheme.muted,
               ),
               onTap: () async {
-                await _logOutRevenueCat();
                 await Supabase.instance.client.auth.signOut();
               },
             ),
@@ -5348,365 +5081,6 @@ class MoreScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-Future<bool> _presentStudyFlowPro(BuildContext context) async {
-  final unlocked = await Navigator.push<bool>(
-    context,
-    MaterialPageRoute(builder: (_) => const StudyFlowProScreen()),
-  );
-  return unlocked == true;
-}
-
-class StudyFlowProScreen extends StatefulWidget {
-  const StudyFlowProScreen({super.key});
-
-  @override
-  State<StudyFlowProScreen> createState() => _StudyFlowProScreenState();
-}
-
-class _StudyFlowProScreenState extends State<StudyFlowProScreen> {
-  Offering? _offering;
-  bool _isPro = false;
-  bool _isLoading = true;
-  bool _isRestoring = false;
-  String? _loadingPackageId;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    unawaited(_loadProProducts());
-  }
-
-  Future<void> _loadProProducts() async {
-    if (kIsWeb) {
-      setState(() {
-        _isLoading = false;
-        _error = 'In-app purchases are available in the Android and iOS apps.';
-      });
-      return;
-    }
-
-    try {
-      final ready = _revenueCatReady;
-      if (ready != null) await ready;
-      if (!await Purchases.isConfigured) {
-        throw StateError(
-          'RevenueCat is not configured. Launch with the platform public SDK key.',
-        );
-      }
-
-      final user = Supabase.instance.client.auth.currentUser;
-      if (user == null) {
-        throw StateError('Sign in before viewing StudyFlow Pro.');
-      }
-      await Purchases.logIn(user.id);
-
-      final results = await Future.wait([
-        Purchases.getOfferings(),
-        Purchases.getCustomerInfo(),
-      ]);
-      final offerings = results[0] as Offerings;
-      final customerInfo = results[1] as CustomerInfo;
-      final offering = offerings.current;
-
-      if (!mounted) return;
-      setState(() {
-        _offering = offering;
-        _isPro = _hasStudyFlowPro(customerInfo);
-        _isLoading = false;
-        if (offering == null ||
-            !offering.availablePackages.any(
-              (package) => package.packageType == PackageType.lifetime,
-            )) {
-          _error =
-              'No lifetime product is attached to the current RevenueCat offering.';
-        }
-      });
-    } catch (error, stackTrace) {
-      developer.log(
-        'Could not load RevenueCat offerings.',
-        name: 'StudyFlowRevenueCat',
-        error: error,
-        stackTrace: stackTrace,
-      );
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _error = error is StateError
-              ? error.message
-              : 'Could not load Pro products. Check your connection and try again.';
-        });
-      }
-    }
-  }
-
-  Future<void> _purchase(Package package) async {
-    if (_loadingPackageId != null || _isPro) return;
-    setState(() => _loadingPackageId = package.identifier);
-
-    try {
-      final result = await Purchases.purchase(PurchaseParams.package(package));
-      final isPro = _hasStudyFlowPro(result.customerInfo);
-      if (!mounted) return;
-      setState(() => _isPro = isPro);
-      if (isPro) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('StudyFlow Pro is active.')),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('The purchase completed, but Pro is not active yet.'),
-          ),
-        );
-      }
-    } catch (error, stackTrace) {
-      developer.log(
-        'StudyFlow Pro purchase did not complete.',
-        name: 'StudyFlowRevenueCat',
-        error: error,
-        stackTrace: stackTrace,
-      );
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Purchase was not completed. You were not charged if it was cancelled.',
-            ),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _loadingPackageId = null);
-    }
-  }
-
-  Future<void> _restorePurchases() async {
-    if (_isRestoring) return;
-    setState(() => _isRestoring = true);
-    try {
-      final user = Supabase.instance.client.auth.currentUser;
-      if (user == null) throw StateError('Sign in before restoring purchases.');
-      await Purchases.logIn(user.id);
-      final customerInfo = await Purchases.restorePurchases();
-      final isPro = _hasStudyFlowPro(customerInfo);
-      if (!mounted) return;
-      setState(() => _isPro = isPro);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            isPro
-                ? 'StudyFlow Pro restored successfully.'
-                : 'No active StudyFlow Pro purchase was found.',
-          ),
-        ),
-      );
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Could not restore purchases. Please try again.'),
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isRestoring = false);
-    }
-  }
-
-  String _packageLabel(Package package) => 'Lifetime';
-
-  @override
-  Widget build(BuildContext context) {
-    final packages =
-        _offering?.availablePackages
-            .where((package) => package.packageType == PackageType.lifetime)
-            .toList(growable: false) ??
-        const <Package>[];
-
-    return Scaffold(
-      backgroundColor: StudyFlowTheme.backgroundLight,
-      appBar: AppBar(title: const Text('StudyFlow Pro')),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
-          children: [
-            GlassContainer(
-              radius: 24,
-              padding: const EdgeInsets.all(22),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.insights_rounded,
-                    size: 32,
-                    color: StudyFlowTheme.sageStrong,
-                  ),
-                  const SizedBox(height: 14),
-                  const Text(
-                    'Make your progress visible.',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Get lifetime access to detailed study analytics with one purchase. StudyFlow has no Pro subscription.',
-                    style: TextStyle(color: StudyFlowTheme.muted, height: 1.45),
-                  ),
-                  const SizedBox(height: 18),
-                  const _ProBenefit(label: 'Weekly study progress and trends'),
-                  const _ProBenefit(label: 'Premium Analytics access'),
-                ],
-              ),
-            ),
-            const SizedBox(height: 18),
-            if (_isLoading)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(24),
-                  child: CircularProgressIndicator(),
-                ),
-              )
-            else if (_isPro)
-              GlassCard(
-                radius: 20,
-                child: ListTile(
-                  leading: const Icon(
-                    Icons.verified_rounded,
-                    color: StudyFlowTheme.sageStrong,
-                  ),
-                  title: const Text(
-                    'StudyFlow Pro is active',
-                    style: TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                  subtitle: const Text(
-                    'Your premium Analytics entitlement is unlocked.',
-                  ),
-                  trailing: const Icon(
-                    Icons.check_circle,
-                    color: StudyFlowTheme.sageStrong,
-                  ),
-                ),
-              )
-            else if (packages.isNotEmpty) ...[
-              const Text(
-                'One-time lifetime purchase',
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
-              ),
-              const SizedBox(height: 10),
-              for (final package in packages)
-                GlassCard(
-                  radius: 18,
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 7,
-                    ),
-                    title: Text(
-                      _packageLabel(package),
-                      style: const TextStyle(fontWeight: FontWeight.w800),
-                    ),
-                    subtitle: Text(
-                      package.storeProduct.description.isNotEmpty
-                          ? package.storeProduct.description
-                          : package.storeProduct.identifier,
-                    ),
-                    trailing: _loadingPackageId == package.identifier
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : FilledButton(
-                            onPressed: _loadingPackageId == null
-                                ? () => _purchase(package)
-                                : null,
-                            child: Text(package.storeProduct.priceString),
-                          ),
-                  ),
-                ),
-            ] else if (_error != null)
-              GlassCard(
-                radius: 18,
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        _error!,
-                        style: const TextStyle(fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(height: 12),
-                      OutlinedButton.icon(
-                        onPressed: _loadProProducts,
-                        icon: const Icon(Icons.refresh_rounded),
-                        label: const Text('Try again'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            const SizedBox(height: 10),
-            if (_isPro)
-              FilledButton.icon(
-                onPressed: () => Navigator.pop(context, true),
-                icon: const Icon(Icons.bar_chart_rounded),
-                label: const Text('Open Analytics'),
-              ),
-            if (!kIsWeb)
-              TextButton.icon(
-                onPressed: _isRestoring ? null : _restorePurchases,
-                icon: _isRestoring
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.restore_rounded),
-                label: const Text('Restore purchases'),
-              ),
-            Text(
-              kIsWeb
-                  ? 'The lifetime purchase and restore options are available in the Android and iOS apps.'
-                  : 'One-time payment. No subscription or recurring charge. Your store confirms the final price before purchase.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: StudyFlowTheme.muted, fontSize: 12),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ProBenefit extends StatelessWidget {
-  const _ProBenefit({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 8),
-    child: Row(
-      children: [
-        const Icon(
-          Icons.check_circle_outline_rounded,
-          size: 18,
-          color: StudyFlowTheme.sageStrong,
-        ),
-        const SizedBox(width: 9),
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.w600),
-          ),
-        ),
-      ],
-    ),
-  );
 }
 
 class _MoreTile extends StatelessWidget {

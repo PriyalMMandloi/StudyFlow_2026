@@ -9,7 +9,6 @@ import Notes from './Notes'
 import Planner from './Planner'
 import Sidebar from './Sidebar'
 import StreakTracker from './StreakTracker'
-import StudyFlowPro from './StudyFlowPro'
 import { ToastProvider } from './ToastContext'
 
 // 🔥 NEW IMPORTS
@@ -48,7 +47,6 @@ function App() {
     analytics: <Analytics />,
     streak: <StreakTracker />,
     motivation: <Motivation />,
-    pro: <StudyFlowPro />,
   }
 
   // 🔥 IF NOT LOGGED IN → SHOW LOGIN PAGE

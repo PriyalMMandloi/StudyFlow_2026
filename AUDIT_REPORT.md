@@ -7,7 +7,6 @@
 - Supabase Auth sends and verifies six-digit email OTPs and persists the client session.
 - Supabase PostgreSQL stores a profile row and one owner-scoped JSONB study-state row per authenticated user.
 - The ordered migrations in `supabase/migrations/` create profile/state storage and normalized owner-scoped chapter/task tables. The chapter migration imports prior custom planner rows but excludes the three former generated seed entries. Apply both in Supabase SQL Editor before testing.
-- RevenueCat remains installed and configured through the existing public platform SDK keys. Its App User ID is the Supabase Auth UUID.
 - The UI, navigation, focus timer, goals, streaks, and analytics remain in the Flutter app. New users start with an empty, user-scoped Notes screen.
 
 ## Local backend removals
@@ -23,7 +22,6 @@ The prior application did not call Firestore. Chapter/planner state was saved on
 - Configure `SUPABASE_URL` and `SUPABASE_ANON_KEY` in the ignored local `.env` for development. These are client configuration values; never place a service-role key in the client.
 - Apply all three SQL migrations in the intended Supabase project. They have not been applied remotely during this local code change.
 - Verify email OTP templates/provider settings in Supabase before live auth testing.
-- RevenueCat purchase, restore, and entitlement behavior remains unverified without the configured public keys, store products, offering, and sandbox test accounts.
 - Account deletion is not implemented. Profile-photo upload uses the private Storage bucket and owner-only policies created by the third migration.
 - Android builds still depend on a working Android SDK; iOS builds require macOS/Xcode.
 
