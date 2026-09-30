@@ -3711,6 +3711,100 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               const SizedBox(height: 20),
 
+              GlassCard(
+                radius: 20,
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  leading: Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAE5FF),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.workspace_premium_outlined,
+                      color: StudyFlowTheme.sageStrong,
+                    ),
+                  ),
+                  title: const Text(
+                    'StudyFlow Pro',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: const Padding(
+                    padding: EdgeInsets.only(top: 4),
+                    child: Text(
+                      'Coming soon!',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    color: StudyFlowTheme.muted,
+                  ),
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('StudyFlow Pro is coming soon!'),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              GlassCard(
+                radius: 20,
+                child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  leading: Container(
+                    width: 46,
+                    height: 46,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFEAF5EE),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Icon(
+                      Icons.restore_outlined,
+                      color: StudyFlowTheme.sageStrong,
+                    ),
+                  ),
+                  title: const Text(
+                    'Restore purchases',
+                    style: TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  subtitle: const Padding(
+                    padding: EdgeInsets.only(top: 4),
+                    child: Text(
+                      'Available when StudyFlow Pro launches',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    color: StudyFlowTheme.muted,
+                  ),
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Purchase restoration will be available when StudyFlow Pro launches.',
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
               SizedBox(
                 width: double.infinity,
                 height: 54,
@@ -5012,6 +5106,18 @@ class MoreScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 22),
+          _MoreTile(
+            icon: Icons.workspace_premium_outlined,
+            title: 'StudyFlow Pro',
+            subtitle: 'Coming soon!',
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('StudyFlow Pro is coming soon!'),
+                ),
+              );
+            },
+          ),
           _MoreTile(
             icon: Icons.flag_outlined,
             title: 'Goals',
