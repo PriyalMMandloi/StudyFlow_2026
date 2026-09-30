@@ -163,6 +163,20 @@ void main() {
     expect(find.text('Create Your First Chapter'), findsOneWidget);
   });
 
+  testWidgets('dashboard renders a greeting without throwing', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: StudyFlowTheme.lightTheme,
+        home: const Scaffold(body: DashboardScreen()),
+      ),
+    );
+
+    expect(find.textContaining(', StudyFlow'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('main navigation exposes home, chapters, tasks, and profile destinations', (
     WidgetTester tester,
   ) async {

@@ -2043,7 +2043,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   DateTime _selectedDate = DateTime.now();
 
   String _randomGreeting() {
-    const greetings = [
+    final greetings = [
       'Hi',
       'Hello',
       'Hola',
