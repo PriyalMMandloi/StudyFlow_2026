@@ -2042,6 +2042,22 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   DateTime _selectedDate = DateTime.now();
 
+  String _randomGreeting() {
+    const greetings = [
+      'Hi',
+      'Hello',
+      'Hola',
+      'Ciao',
+      'Bonjour',
+      'Namaste',
+      'Konnichiwa',
+      'Hej',
+      'Salut',
+      'Welcome',
+    ];
+    return (greetings..shuffle()).first;
+  }
+
   String _greeting() {
     final hour = DateTime.now().hour;
     if (hour >= 5 && hour < 12) return 'Good morning';
@@ -2149,7 +2165,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                     const SizedBox(height: 6),
                                     Text(
-                                      'Hi, $firstName',
+                                      '${_randomGreeting()}, $firstName',
                                       style: const TextStyle(
                                         fontSize: 29,
                                         fontWeight: FontWeight.w800,
@@ -2161,7 +2177,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                               ),
                               GestureDetector(
-                                onTap: _openProfile,
+                                onTap: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('StudyFlow Pro is coming soon!')),
+                                  );
+                                },
                                 child: Container(
                                   width: 54,
                                   height: 54,
@@ -2190,7 +2210,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ],
                                   ),
                                   child: const Icon(
-                                    Icons.person_rounded,
+                                    Icons.workspace_premium_rounded,
                                     color: StudyFlowTheme.sageStrong,
                                     size: 25,
                                   ),
@@ -3816,7 +3836,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   subtitle: const Padding(
                     padding: EdgeInsets.only(top: 4),
                     child: Text(
-                      'Unlock detailed study analytics',
+                      'Coming soon!',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
                   ),
@@ -3824,12 +3844,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Icons.chevron_right,
                     color: StudyFlowTheme.muted,
                   ),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const StudyFlowProScreen(),
-                    ),
-                  ),
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('StudyFlow Pro is coming soon!')),
+                    );
+                  },
                 ),
               ),
 
