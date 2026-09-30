@@ -49,16 +49,19 @@ void main() {
     expect(find.text('Today'), findsOneWidget);
   });
 
-  test('email, password, and username validation helpers reject invalid values', () {
-    expect(validateEmail('user@example.com'), isNull);
-    expect(validateEmail('bad-email'), isNotNull);
-    expect(validatePassword('StrongPass1!'), isNull);
-    expect(validatePassword('short'), isNotNull);
-    expect(validatePassword('password'), isNotNull);
-    expect(validateUsername('studyflow_user'), isNull);
-    expect(validateUsername('  '), isNotNull);
-    expect(validateUsername('ab'), isNotNull);
-  });
+  test(
+    'email, password, and username validation helpers reject invalid values',
+    () {
+      expect(validateEmail('user@example.com'), isNull);
+      expect(validateEmail('bad-email'), isNotNull);
+      expect(validatePassword('StrongPass1!'), isNull);
+      expect(validatePassword('short'), isNotNull);
+      expect(validatePassword('password'), isNotNull);
+      expect(validateUsername('studyflow_user'), isNull);
+      expect(validateUsername('  '), isNotNull);
+      expect(validateUsername('ab'), isNotNull);
+    },
+  );
 
   test('chapter and topic models restore database completion fields', () {
     final chapter = StudyChapter.fromJson({
@@ -174,29 +177,55 @@ void main() {
     );
 
     expect(find.textContaining(', StudyFlow'), findsOneWidget);
+    final cardFinder = find.byKey(const ValueKey('home-motivation-card'));
+    await tester.scrollUntilVisible(cardFinder, 300);
+    final quoteFinder = find.byKey(const ValueKey('home-motivation-quote'));
+    final firstQuote = tester.widget<Text>(quoteFinder).data;
+
+    await tester.tap(cardFinder);
+    await tester.pump();
+
+    expect(tester.widget<Text>(quoteFinder).data, isNot(firstQuote));
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('main navigation exposes home, chapters, tasks, and profile destinations', (
+  testWidgets('motivation screen starts with a quote and offers a new one', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: const StudyFlowNavBar(
-          selectedIndex: 0,
-          onDestinationSelected: _noop,
-        ),
-      ),
-    );
+    await tester.pumpWidget(MaterialApp(home: const MotivationScreen()));
 
-    expect(find.text('Home'), findsOneWidget);
-    expect(find.text('Chapters'), findsOneWidget);
-    expect(find.text('Tasks'), findsOneWidget);
-    expect(find.text('Profile'), findsOneWidget);
-    expect(find.text('Plan'), findsNothing);
-    expect(find.text('Notes'), findsNothing);
-    expect(find.text('More'), findsNothing);
+    final quoteFinder = find.textContaining('“');
+    final firstQuote = tester.widget<Text>(quoteFinder).data;
+    expect(firstQuote, isNotNull);
+
+    await tester.tap(find.text('New Quote'));
+    await tester.pump();
+
+    expect(tester.widget<Text>(quoteFinder).data, isNot(firstQuote));
+    expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'main navigation exposes home, chapters, tasks, and profile destinations',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: const StudyFlowNavBar(
+            selectedIndex: 0,
+            onDestinationSelected: _noop,
+          ),
+        ),
+      );
+
+      expect(find.text('Home'), findsOneWidget);
+      expect(find.text('Chapters'), findsOneWidget);
+      expect(find.text('Tasks'), findsOneWidget);
+      expect(find.text('Profile'), findsOneWidget);
+      expect(find.text('Plan'), findsNothing);
+      expect(find.text('Notes'), findsNothing);
+      expect(find.text('More'), findsNothing);
+    },
+  );
 
   testWidgets('planner lays out and opens the chapter editor', (
     WidgetTester tester,
@@ -209,10 +238,28 @@ void main() {
     );
 
     expect(tester.takeException(), isNull);
-    await tester.tap(find.widgetWithText(FilledButton, 'Create chapter'));
+    await tester.tap(find.text('Create chapter'));
     await tester.pumpAndSettle();
 
     expect(find.text('Chapter title'), findsOneWidget);
+    final descriptionFinder = find.byWidgetPredicate(
+      (widget) =>
+          widget is TextField &&
+          widget.decoration?.labelText == 'Description (optional)',
+    );
+    final initialDescriptionSize = tester.getSize(descriptionFinder);
+    await tester.enterText(
+      descriptionFinder,
+      List.filled(12, 'A detailed line of chapter information').join('\n'),
+    );
+    await tester.pump();
+    final expandedDescriptionSize = tester.getSize(descriptionFinder);
+
+    expect(
+      expandedDescriptionSize.height,
+      greaterThan(initialDescriptionSize.height),
+    );
+    expect(expandedDescriptionSize.width, initialDescriptionSize.width);
     expect(tester.takeException(), isNull);
   });
 }

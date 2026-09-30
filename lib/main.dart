@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart'
@@ -2041,6 +2042,17 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   DateTime _selectedDate = DateTime.now();
+  final Random _quoteRandom = Random();
+  late int _homeQuoteIndex = _quoteRandom.nextInt(_motivationQuotes.length);
+
+  void _showAnotherHomeQuote() {
+    setState(() {
+      final nextIndex = _quoteRandom.nextInt(_motivationQuotes.length - 1);
+      _homeQuoteIndex = nextIndex >= _homeQuoteIndex
+          ? nextIndex + 1
+          : nextIndex;
+    });
+  }
 
   String _randomGreeting() {
     final greetings = [
@@ -2179,7 +2191,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               GestureDetector(
                                 onTap: () {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('StudyFlow Pro is coming soon!')),
+                                    const SnackBar(
+                                      content: Text(
+                                        'StudyFlow Pro is coming soon!',
+                                      ),
+                                    ),
                                   );
                                 },
                                 child: Container(
@@ -2813,9 +2829,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       SliverPadding(
                         padding: const EdgeInsets.fromLTRB(20, 18, 20, 36),
                         sliver: SliverToBoxAdapter(
-                          child: GlassCard(
+                            child: GlassCard(
+                              key: const ValueKey('home-motivation-card'),
                             radius: 22,
-                            child: Row(
+                              onTap: _showAnotherHomeQuote,
+                              child: Row(
                               children: [
                                 Container(
                                   width: 44,
@@ -2830,13 +2848,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: 13),
-                                const Expanded(
+                                Expanded(
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Small steps, big progress.',
+                                        _motivationQuotes[_homeQuoteIndex],
+                                        key: const ValueKey(
+                                          'home-motivation-quote',
+                                        ),
                                         style: TextStyle(
                                           fontWeight: FontWeight.w800,
                                           fontSize: 14,
@@ -2845,7 +2866,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       ),
                                       SizedBox(height: 4),
                                       Text(
-                                        'Focus on one task at a time and keep your momentum going.',
+                                        'Tap for another quote',
                                         style: TextStyle(
                                           color: StudyFlowTheme.muted,
                                           fontSize: 12,
@@ -2908,41 +2929,46 @@ Future<StudyChapterDraft?> _showStudyChapterDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: Text(chapter == null ? 'Create chapter' : 'Edit chapter'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: titleController,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(labelText: 'Chapter title'),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: subjectController,
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'Subject or category',
+        content: SizedBox(
+          width: min(MediaQuery.sizeOf(dialogContext).width * 0.85, 560.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: titleController,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: const InputDecoration(labelText: 'Chapter title'),
                 ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: descriptionController,
-                minLines: 2,
-                maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'Description (optional)',
+                const SizedBox(height: 12),
+                TextField(
+                  controller: subjectController,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: const InputDecoration(
+                    labelText: 'Subject or category',
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: durationController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Estimated minutes',
+                const SizedBox(height: 12),
+                TextField(
+                  controller: descriptionController,
+                  minLines: 3,
+                  maxLines: null,
+                  keyboardType: TextInputType.multiline,
+                  textAlignVertical: TextAlignVertical.top,
+                  decoration: const InputDecoration(
+                    labelText: 'Description (optional)',
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 12),
+                TextField(
+                  controller: durationController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: 'Estimated minutes',
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
@@ -3846,7 +3872,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('StudyFlow Pro is coming soon!')),
+                      const SnackBar(
+                        content: Text('StudyFlow Pro is coming soon!'),
+                      ),
                     );
                   },
                 ),
@@ -6319,6 +6347,65 @@ class _StreakDay extends StatelessWidget {
   }
 }
 
+const _motivationQuotes = [
+  'Small steps still move you forward.',
+  'Begin before you feel ready.',
+  'Your effort today builds tomorrow’s confidence.',
+  'One focused minute can begin a better hour.',
+  'Progress grows from showing up.',
+  'Every page turned is progress made.',
+  'Keep going; your future self is cheering you on.',
+  'A little practice makes a lasting difference.',
+  'You can do hard things one step at a time.',
+  'Focus on the next step, not the whole staircase.',
+  'Your pace is still progress.',
+  'Curiosity is a powerful place to start.',
+  'Mistakes are proof that you are learning.',
+  'Make today count in small ways.',
+  'Consistency turns effort into momentum.',
+  'You are closer than you were yesterday.',
+  'Start with what you know; build from there.',
+  'Every study session is an investment in you.',
+  'Patience and practice make progress.',
+  'Keep learning; your possibilities keep growing.',
+  'A fresh start can begin right now.',
+  'Your determination is stronger than distraction.',
+  'One clear goal can change your whole day.',
+  'Give your best to this moment.',
+  'You do not need perfect conditions to begin.',
+  'Small wins create strong habits.',
+  'Trust the work you put in.',
+  'Take a breath, then take the next step.',
+  'Learning today opens doors tomorrow.',
+  'You have the ability to figure this out.',
+  'Let your progress be louder than your doubts.',
+  'Every question brings you closer to understanding.',
+  'Be proud of the effort no one sees.',
+  'A steady rhythm carries you far.',
+  'Your goals are worth your attention.',
+  'Keep your focus; the results will follow.',
+  'You are building more than knowledge.',
+  'The best time to begin is this moment.',
+  'Turn one page, solve one problem, keep moving.',
+  'Your hard work is adding up.',
+  'Choose progress over perfection today.',
+  'You can restart as many times as you need.',
+  'Every focused effort makes you stronger.',
+  'Stay patient with the process.',
+  'Your commitment is shaping your future.',
+  'Keep reaching; growth takes practice.',
+  'You are capable of more than you think.',
+  'Make room for progress, not pressure.',
+  'One task at a time is enough.',
+  'Your next breakthrough starts with practice.',
+  'Show up for the future you want.',
+  'Keep learning; every day adds something.',
+  'Your effort matters, especially on tough days.',
+  'Build confidence by keeping small promises to yourself.',
+  'A focused start is already a win.',
+  'You grow each time you try again.',
+];
+
 // ─────────────────────────────────────────────
 // MOTIVATION
 // ─────────────────────────────────────────────
@@ -6331,41 +6418,25 @@ class MotivationScreen extends StatefulWidget {
 }
 
 class _MotivationScreenState extends State<MotivationScreen> {
-  final List<Map<String, String>> _quotes = const [
-    {
-      'quote': 'Small progress is still progress.',
-      'tip':
-          'Focus on one task at a time instead of trying to finish everything together.',
-    },
-    {
-      'quote': 'Consistency beats intensity.',
-      'tip': 'A focused 30-minute session every day can build a strong habit.',
-    },
-    {
-      'quote': 'Your future self will thank you for studying today.',
-      'tip': 'Start with the easiest task to build momentum.',
-    },
-    {
-      'quote': 'Don’t wait for motivation. Start, and motivation follows.',
-      'tip': 'Set a timer and give yourself just five minutes to begin.',
-    },
-    {
-      'quote': 'One chapter. One concept. One step at a time.',
-      'tip': 'Break difficult topics into smaller study blocks.',
-    },
-  ];
-
   int _index = 0;
+  final Random _random = Random();
+
+  @override
+  void initState() {
+    super.initState();
+    _index = _random.nextInt(_motivationQuotes.length);
+  }
 
   void _nextQuote() {
     setState(() {
-      _index = (_index + 1) % _quotes.length;
+      final nextIndex = _random.nextInt(_motivationQuotes.length - 1);
+      _index = nextIndex >= _index ? nextIndex + 1 : nextIndex;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final item = _quotes[_index];
+    final quote = _motivationQuotes[_index];
 
     return Scaffold(
       backgroundColor: StudyFlowTheme.backgroundLight,
@@ -6385,24 +6456,13 @@ class _MotivationScreenState extends State<MotivationScreen> {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  '“${item['quote']}”',
+                  '“$quote”',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 23,
                     fontWeight: FontWeight.w800,
                     height: 1.35,
                     letterSpacing: -0.2,
-                  ),
-                ),
-                const SizedBox(height: 22),
-                Text(
-                  item['tip']!,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: StudyFlowTheme.muted,
-                    fontSize: 15,
-                    height: 1.45,
-                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -6418,37 +6478,6 @@ class _MotivationScreenState extends State<MotivationScreen> {
               padding: const EdgeInsets.symmetric(vertical: 15),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(18),
-              ),
-            ),
-          ),
-          const SizedBox(height: 22),
-          const Text(
-            'Today’s reminder',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 10),
-          GlassCard(
-            radius: 22,
-            child: const Padding(
-              padding: EdgeInsets.all(18),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.self_improvement_outlined,
-                    color: StudyFlowTheme.sageStrong,
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Put your phone away, open your current task, and give it your full attention. 🌱',
-                      style: TextStyle(
-                        height: 1.45,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
