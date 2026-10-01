@@ -2748,11 +2748,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       SliverPadding(
                         padding: const EdgeInsets.fromLTRB(20, 18, 20, 36),
                         sliver: SliverToBoxAdapter(
-                            child: GlassCard(
-                              key: const ValueKey('home-motivation-card'),
+                          child: GlassCard(
+                            key: const ValueKey('home-motivation-card'),
                             radius: 22,
-                              onTap: _showAnotherHomeQuote,
-                              child: Row(
+                            onTap: _showAnotherHomeQuote,
+                            child: Row(
                               children: [
                                 Container(
                                   width: 44,
@@ -2816,7 +2816,7 @@ Future<void> _openChapterEditor(
   BuildContext context, {
   StudyChapter? chapter,
 }) async {
-  final draft = await _showStudyChapterDialog(context, chapter: chapter);
+  final draft = await _showStudyChapterEditor(context, chapter: chapter);
   if (draft == null || !context.mounted) return;
 
   try {
@@ -2830,109 +2830,139 @@ Future<void> _openChapterEditor(
   }
 }
 
-Future<StudyChapterDraft?> _showStudyChapterDialog(
+Future<StudyChapterDraft?> _showStudyChapterEditor(
   BuildContext context, {
   StudyChapter? chapter,
 }) async {
-  final titleController = TextEditingController(text: chapter?.title ?? '');
-  final subjectController = TextEditingController(text: chapter?.subject ?? '');
-  final descriptionController = TextEditingController(
-    text: chapter?.description ?? '',
+  return Navigator.of(context).push<StudyChapterDraft>(
+    MaterialPageRoute(
+      builder: (_) => _StudyChapterEditorScreen(chapter: chapter),
+    ),
   );
-  final durationController = TextEditingController(
-    text: (chapter?.estimatedMinutes ?? 30).toString(),
+}
+
+class _StudyChapterEditorScreen extends StatefulWidget {
+  const _StudyChapterEditorScreen({this.chapter});
+
+  final StudyChapter? chapter;
+
+  @override
+  State<_StudyChapterEditorScreen> createState() =>
+      _StudyChapterEditorScreenState();
+}
+
+class _StudyChapterEditorScreenState extends State<_StudyChapterEditorScreen> {
+  late final TextEditingController _titleController = TextEditingController(
+    text: widget.chapter?.title ?? '',
+  );
+  late final TextEditingController _subjectController = TextEditingController(
+    text: widget.chapter?.subject ?? '',
+  );
+  late final TextEditingController _descriptionController =
+      TextEditingController(text: widget.chapter?.description ?? '');
+  late final TextEditingController _durationController = TextEditingController(
+    text: (widget.chapter?.estimatedMinutes ?? 30).toString(),
   );
 
-  try {
-    return await showDialog<StudyChapterDraft>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _subjectController.dispose();
+    _descriptionController.dispose();
+    _durationController.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    final title = _titleController.text.trim();
+    final subject = _subjectController.text.trim();
+    final minutes = int.tryParse(_durationController.text.trim());
+    if (title.isEmpty || subject.isEmpty || minutes == null || minutes <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Enter a title, subject, and positive duration.'),
+        ),
+      );
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
+    Navigator.pop(
+      context,
+      StudyChapterDraft(
+        title: title,
+        subject: subject,
+        description: _descriptionController.text,
+        estimatedMinutes: minutes,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final chapter = widget.chapter;
+    return Scaffold(
+      appBar: AppBar(
         title: Text(chapter == null ? 'Create chapter' : 'Edit chapter'),
-        content: SizedBox(
-          width: min(MediaQuery.sizeOf(dialogContext).width * 0.85, 560.0),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: titleController,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(labelText: 'Chapter title'),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: subjectController,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(
-                    labelText: 'Subject or category',
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 560),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextField(
+                    controller: _titleController,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: const InputDecoration(
+                      labelText: 'Chapter title',
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: descriptionController,
-                  minLines: 3,
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  textAlignVertical: TextAlignVertical.top,
-                  decoration: const InputDecoration(
-                    labelText: 'Description (optional)',
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _subjectController,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(
+                      labelText: 'Subject or category',
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: durationController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    labelText: 'Estimated minutes',
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _descriptionController,
+                    minLines: 3,
+                    maxLines: 5,
+                    keyboardType: TextInputType.multiline,
+                    textAlignVertical: TextAlignVertical.top,
+                    decoration: const InputDecoration(
+                      labelText: 'Description (optional)',
+                      alignLabelWithHint: true,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: _durationController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Estimated minutes',
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  FilledButton(
+                    onPressed: _save,
+                    child: Text(
+                      chapter == null ? 'Create chapter' : 'Save changes',
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final title = titleController.text.trim();
-              final subject = subjectController.text.trim();
-              final minutes = int.tryParse(durationController.text.trim());
-              if (title.isEmpty ||
-                  subject.isEmpty ||
-                  minutes == null ||
-                  minutes <= 0) {
-                ScaffoldMessenger.of(dialogContext).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Enter a title, subject, and positive duration.',
-                    ),
-                  ),
-                );
-                return;
-              }
-              Navigator.pop(
-                dialogContext,
-                StudyChapterDraft(
-                  title: title,
-                  subject: subject,
-                  description: descriptionController.text,
-                  estimatedMinutes: minutes,
-                ),
-              );
-            },
-            child: Text(chapter == null ? 'Create chapter' : 'Save changes'),
-          ),
-        ],
       ),
     );
-  } finally {
-    titleController.dispose();
-    subjectController.dispose();
-    descriptionController.dispose();
-    durationController.dispose();
   }
 }
 
@@ -5112,9 +5142,7 @@ class MoreScreen extends StatelessWidget {
             subtitle: 'Coming soon!',
             onTap: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('StudyFlow Pro is coming soon!'),
-                ),
+                const SnackBar(content: Text('StudyFlow Pro is coming soon!')),
               );
             },
           ),

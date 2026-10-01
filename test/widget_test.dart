@@ -227,7 +227,7 @@ void main() {
     },
   );
 
-  testWidgets('planner lays out and opens the chapter editor', (
+  testWidgets('chapter editor remains stable while typing with keyboard open', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
@@ -252,14 +252,23 @@ void main() {
       descriptionFinder,
       List.filled(12, 'A detailed line of chapter information').join('\n'),
     );
+    final fullDescription = tester
+        .widget<TextField>(descriptionFinder)
+        .controller!
+        .text;
+    tester.view.viewInsets = const FakeViewPadding(bottom: 320);
     await tester.pump();
-    final expandedDescriptionSize = tester.getSize(descriptionFinder);
 
     expect(
-      expandedDescriptionSize.height,
-      greaterThan(initialDescriptionSize.height),
+      tester.getSize(descriptionFinder).width,
+      initialDescriptionSize.width,
     );
-    expect(expandedDescriptionSize.width, initialDescriptionSize.width);
+    expect(tester.widget<TextField>(descriptionFinder).maxLength, isNull);
+    expect(
+      fullDescription,
+      List.filled(12, 'A detailed line of chapter information').join('\n'),
+    );
     expect(tester.takeException(), isNull);
+    tester.view.resetViewInsets();
   });
 }
