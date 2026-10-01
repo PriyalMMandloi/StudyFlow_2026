@@ -173,8 +173,8 @@ class StudyPlanStore extends ChangeNotifier {
           .from('study_chapters')
           .select()
           .eq('user_id', userId)
-          .order('sort_order')
-          .order('created_at');
+          .order('sort_order', ascending: false)
+          .order('created_at', ascending: false);
 
       if (!_isCurrentUser(userId, generation)) return;
 
@@ -190,8 +190,8 @@ class StudyPlanStore extends ChangeNotifier {
             .select()
             .eq('user_id', userId)
             .inFilter('chapter_id', chapterIds)
-            .order('sort_order')
-            .order('created_at');
+            .order('sort_order', ascending: false)
+            .order('created_at', ascending: false);
 
         for (final row in taskRows) {
           final task = StudyChapterTask.fromJson(
@@ -260,7 +260,7 @@ class StudyPlanStore extends ChangeNotifier {
         .select()
         .single();
     final chapter = StudyChapter.fromJson(Map<String, dynamic>.from(row));
-    chapters = List.unmodifiable([...chapters, chapter]);
+    chapters = List.unmodifiable([chapter, ...chapters]);
     notifyListeners();
     return chapter;
   }
@@ -357,14 +357,16 @@ class StudyPlanStore extends ChangeNotifier {
     final byId = {for (final chapter in chapters) chapter.id: chapter};
     chapters = List.unmodifiable([
       for (var index = 0; index < orderedIds.length; index++)
-        byId[orderedIds[index]]!.copyWith(sortOrder: index),
+        byId[orderedIds[index]]!.copyWith(
+          sortOrder: orderedIds.length - index - 1,
+        ),
     ]);
     notifyListeners();
 
     try {
       await Supabase.instance.client.rpc(
         'reorder_study_chapters',
-        params: {'p_chapter_ids': orderedIds},
+        params: {'p_chapter_ids': orderedIds.reversed.toList()},
       );
     } catch (_) {
       if (Supabase.instance.client.auth.currentUser?.id == userId) {
@@ -401,7 +403,7 @@ class StudyPlanStore extends ChangeNotifier {
         .select()
         .single();
     final task = StudyChapterTask.fromJson(Map<String, dynamic>.from(row));
-    _replaceChapter(index, chapter.copyWith(tasks: [...chapter.tasks, task]));
+    _replaceChapter(index, chapter.copyWith(tasks: [task, ...chapter.tasks]));
     return task;
   }
 
